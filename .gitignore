@@ -16,3 +16,8 @@ next-env.d.ts
 # Logs and misc
 *.log
 .DS_Store
+
+# Python
+venv/
+__pycache__/
+*.pyc
