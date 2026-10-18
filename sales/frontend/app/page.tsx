@@ -27,54 +27,8 @@ const transactions = [
 ];
 
 export default function Home() {
-  return (
-    <div className="min-h-screen bg-slate-50 text-slate-800">
-      <div className="flex min-h-screen">
-        {/* Sidebar */}
-        <aside className="hidden w-64 shrink-0 border-r border-slate-200 bg-white lg:flex lg:flex-col">
-          <div className="border-b border-slate-100 px-6 py-6">
-            <div className="flex items-center gap-3">
-              <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-blue-600 text-xl font-bold text-white">
-                S
-              </div>
-              <div>
-                <h1 className="text-lg font-bold text-slate-900">Sales ERP</h1>
-                <p className="text-xs text-slate-500">Sales Management System</p>
-              </div>
-            </div>
-          </div>
-
-          <nav className="flex-1 space-y-1 overflow-y-auto px-3 py-5">
-            <p className="mb-3 px-3 text-xs font-semibold uppercase tracking-wider text-slate-400">
-              Main Menu
-            </p>
-
-            <a
-              href="/"
-              className="flex items-center gap-3 rounded-lg bg-blue-50 px-3 py-3 text-sm font-semibold text-blue-700"
-            >
-              <span>⌂</span> Dashboard
-            </a>
-
-            {modules.map((module) => (
-              <a
-                key={module.name}
-                href={module.href}
-                className="flex items-center gap-3 rounded-lg px-3 py-3 text-sm text-slate-600 transition hover:bg-slate-100 hover:text-blue-700"
-              >
-                <span className="w-5 text-center text-base">{module.icon}</span>
-                <span>{module.name}</span>
-              </a>
-            ))}
-          </nav>
-
-          <div className="border-t border-slate-100 p-4">
-            <div className="rounded-xl bg-slate-50 p-3">
-              <p className="text-sm font-semibold text-slate-800">Sales Module ERP</p>
-              <p className="mt-1 text-xs text-slate-500">Team 4 · Sales & Customer Management</p>
-            </div>
-          </div>
-        </aside>
+    return (
+  <div className="min-h-screen bg-slate-50 text-slate-800">
 
         {/* Main Content */}
         <main className="min-w-0 flex-1">
@@ -257,6 +211,5 @@ export default function Home() {
           </div>
         </main>
       </div>
-    </div>
   );
 }

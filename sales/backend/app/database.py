@@ -1,15 +1,21 @@
+
 import os
+from pathlib import Path
 
 from dotenv import load_dotenv
 from sqlalchemy import create_engine
 from sqlalchemy.orm import declarative_base, sessionmaker
 
-load_dotenv()
+# Load sales/backend/.env
+BACKEND_DIR = Path(__file__).resolve().parent.parent
+load_dotenv(BACKEND_DIR / ".env")
 
-DATABASE_URL = os.getenv("https://supabase.com/dashboard/project/bbhszvyqvggdvtxcpdoe/database/schemas")
+DATABASE_URL = os.getenv("DATABASE_URL")
 
 if not DATABASE_URL:
-    raise RuntimeError("DATABASE_URL is missing from .env")
+    raise RuntimeError(
+        "DATABASE_URL is missing from sales/backend/.env"
+    )
 
 engine = create_engine(
     DATABASE_URL,
