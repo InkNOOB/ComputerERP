@@ -18,7 +18,7 @@ export default function SupplierList({ limit }: { limit?: number }) {
   useEffect(() => {
     async function load() {
       try {
-        const res = await fetch("http://127.0.0.1:8000/suppliers/");
+        const res = await fetch("http://127.0.0.1:8000/suppliers/"); // Change this once backend is deployed
         if (!res.ok) throw new Error(`Request failed (${res.status})`);
         setSuppliers(await res.json());
       } catch (e) {
