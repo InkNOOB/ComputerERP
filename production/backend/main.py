@@ -48,13 +48,16 @@ class ProductionOrderInput(BaseModel):
     WH_ID: int # FK to the Warehouse (Inventory)
     QuantityRequired: int = Field(gt=0) # Target Production quantity; positive integers only
 
-# - Create a new production order
+# - Creates a new production order
 @app.post("/production-orders")
 def create_production_order(order: ProductionOrderInput):
     try:
         with get_db_connection() as database_connection:
             with database_connection.cursor() as sql_cursor:
                 sql_cursor.execute(
+
+                    # PM_ID = Product Master from 'this' department.
+                    # WH_ID = Warehouse from 'Inventory' department.
                     """
                     INSERT INTO public."PRODUCTION"
                     (
