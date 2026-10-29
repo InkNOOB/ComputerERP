@@ -17,4 +17,11 @@ next-env.d.ts
 *.log
 .DS_Store
 
+<<<<<<< HEAD
+# Python
+venv/
+__pycache__/
+*.pyc
+=======
 sales/backend/env
+>>>>>>> d0a6245d65133ca0dde84e90c1d7a6df80f05527
