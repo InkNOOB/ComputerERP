@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 from fastapi import FastAPI, HTTPException
 from database import get_db_connection
 
@@ -40,3 +41,14 @@ def test_specific_user():
         return {"status": "Success", "data": user_profile}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Database query failed: {str(e)}")
+=======
+from fastapi import FastAPI
+from routers import users
+
+app = FastAPI()
+app.include_router(users.router)
+
+@app.get("/")
+def home():
+    return {"status": "Online"}
+>>>>>>> d0a6245d65133ca0dde84e90c1d7a6df80f05527
