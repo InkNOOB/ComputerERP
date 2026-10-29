@@ -16,3 +16,5 @@ next-env.d.ts
 # Logs and misc
 *.log
 .DS_Store
+
+sales/backend/env
