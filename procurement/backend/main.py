@@ -2,7 +2,7 @@ import psycopg
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
-from routers import suppliers, quotations, purchase_requests
+from routers import suppliers, quotations, purchase_requests, orders, invoices
 
 app = FastAPI()
 
@@ -20,6 +20,8 @@ async def db_unavailable(request, exc):
 app.include_router(suppliers.router)
 app.include_router(purchase_requests.router)
 app.include_router(quotations.router)
+app.include_router(orders.router)
+app.include_router(invoices.router)
 
 @app.get("/")
 def home():
