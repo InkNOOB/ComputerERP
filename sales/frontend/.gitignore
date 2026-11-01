@@ -39,3 +39,24 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Environment variables and secrets
+.env
+.env.*
+!.env.example
+
+# Backend environment files
+sales/backend/env
+
+.env
+.env.local
+.env.*.local
+
+# Logs and misc
+*.log
+.DS_Store
+
+# Sales backend secrets and virtual environment
+sales/backend/.env
+sales/backend/env
+sales/backend/.venv/
