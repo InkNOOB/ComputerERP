@@ -2,7 +2,7 @@ import psycopg
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
-from routers import suppliers, quotations, purchase_requests, orders, invoices
+from routers import suppliers, quotations, purchase_requests, orders, invoices, dashboard
 
 app = FastAPI()
 
@@ -22,6 +22,7 @@ app.include_router(purchase_requests.router)
 app.include_router(quotations.router)
 app.include_router(orders.router)
 app.include_router(invoices.router)
+app.include_router(dashboard.router)
 
 @app.get("/")
 def home():
