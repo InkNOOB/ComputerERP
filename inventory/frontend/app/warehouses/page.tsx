@@ -114,6 +114,47 @@ export default function WarehousesPage() {
     setError("");
   }
 
+  // Delete Warehouse
+  async function handleDeleteWarehouse(warehouse: Warehouse) {
+    const confirmed = window.confirm(
+      `Are you sure you want to delete "${warehouse.Warehouse_Name}"?`
+    );
+
+    if (!confirmed) {
+      return;
+    }
+
+    try {
+      setError("");
+
+      const response = await fetch(
+        `${apiUrl}/warehouses/${warehouse.WH_ID}`,
+        {
+          method: "DELETE",
+        }
+      );
+
+      if (!response.ok) {
+        const result = await response.json();
+        throw new Error(
+          result.detail || "Failed to delete warehouse."
+        );
+      }
+
+      setWarehouses((previous) =>
+        previous.filter(
+          (item) => item.WH_ID !== warehouse.WH_ID
+        )
+      );
+    } catch (err) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Something went wrong."
+      );
+    }
+  }
+
   // Cancel Edit
   function handleCancelEdit() {
     setShowEditForm(false);
@@ -363,13 +404,21 @@ export default function WarehousesPage() {
           </p>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-sm">
+            <table className="w-full table-fixed text-left text-sm">
               <thead>
                 <tr className="border-b border-[#DCE7EA] text-[#587176]">
-                  <th className="px-4 py-3">Warehouse ID</th>
-                  <th className="px-4 py-3">Warehouse Name</th>
-                  <th className="px-4 py-3">Location</th>
-                  <th className="px-4 py-3">Actions</th>
+                  <th className="w-[22%] px-4 py-3">
+                    Warehouse ID
+                  </th>
+                  <th className="w-[28%] px-4 py-3">
+                    Warehouse Name
+                  </th>
+                  <th className="w-[25%] px-4 py-3">
+                    Location
+                  </th>
+                  <th className="w-[25%] px-4 py-3">
+                    Actions
+                  </th>
                 </tr>
               </thead>
 
@@ -379,26 +428,40 @@ export default function WarehousesPage() {
                     key={warehouse.WH_ID}
                     className="border-b border-[#DCE7EA] last:border-0"
                   >
-                    <td className="px-4 py-4">
+                    {/* 1. Warehouse ID */}
+                    <td className="px-4 py-4 text-[#587176]">
                       {warehouse.WH_ID}
                     </td>
 
+                    {/* 2. Warehouse Name */}
                     <td className="px-4 py-4 font-medium text-[#1F3338]">
                       {warehouse.Warehouse_Name}
                     </td>
 
+                    {/* 3. Location */}
                     <td className="px-4 py-4 text-[#587176]">
                       {warehouse.Location || "—"}
                     </td>
 
+                    {/* 4. Actions */}
                     <td className="px-4 py-4">
-                      <button
-                        type="button"
-                        onClick={() => handleEditClick(warehouse)}
-                        className="rounded-lg border border-[#DCE7EA] px-3 py-1.5 text-xs font-semibold text-[#35636B] hover:bg-[#F2F7F8]"
-                      >
-                        Edit
-                      </button>
+                      <div className="flex flex-wrap items-center gap-2">
+                        <button
+                          type="button"
+                          onClick={() => handleEditClick(warehouse)}
+                          className="rounded-lg border border-[#DCE7EA] px-3 py-1.5 text-xs font-semibold text-[#35636B] hover:bg-[#F2F7F8]"
+                        >
+                          Edit
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() => handleDeleteWarehouse(warehouse)}
+                          className="rounded-lg border border-red-200 px-3 py-1.5 text-xs font-semibold text-red-600 hover:bg-red-50"
+                        >
+                          Delete
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}
