@@ -22,7 +22,3 @@ venv/
 __pycache__/
 *.pyc
 sales/backend/env
-
-# who is JSON?
-package-lock.json
-package.json
