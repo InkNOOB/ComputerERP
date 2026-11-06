@@ -1,14 +1,20 @@
-export interface SalesOrder {
-  order_id: number;
+
+export interface Customer {
   customer_id: number;
-  quotation_id: number | null;
-  order_date: string;
-  items: QuotationItem[];
-  total_amount: number;
-  status:
-    | "Pending"
-    | "Confirmed"
-    | "Processing"
-    | "Completed"
-    | "Cancelled";
+  name: string;
+  email: string | null;
+  contact: string | null;
+  address: string | null;
+  customer_type: "Individual" | "Business";
+  status: boolean;
 }
+
+export interface CustomerCreate {
+  name: string;
+  email: string | null;
+  contact: string | null;
+  address: string | null;
+  customer_type: "Individual" | "Business";
+}
+
+export type CustomerUpdate = Partial<CustomerCreate>;

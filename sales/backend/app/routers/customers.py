@@ -64,6 +64,9 @@ def get_customers(
 ):
     statement = select(Customer)
 
+    if active_only:
+        statement = statement.where(Customer.status.is_(True))
+
     if search and search.strip():
         term = f"%{search.strip()}%"
         statement = statement.where(
