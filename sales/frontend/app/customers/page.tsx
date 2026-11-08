@@ -216,7 +216,7 @@ export default function CustomersPage() {
                   : "Add New Customer"}
               </h2>
               <p className="mt-1 text-sm text-gray-500">
-                Enter the customer's information below.
+                Enter the customer information below.
               </p>
             </div>
 

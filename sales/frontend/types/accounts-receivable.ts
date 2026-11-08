@@ -1,10 +1,10 @@
+
 export interface AccountsReceivable {
-  ar_id: number;
+  AR_ID: number;
   invoice_id: number;
   customer_id: number;
-  amount_due: number;
-  amount_paid: number;
-  remaining_balance: number;
-  due_date: string;
-  status: "Open" | "Partially Paid" | "Paid" | "Overdue";
+  amount_due: string | number;
+  amount_paid: string | number;
+  balance: string | number;
+  status: string | null;
 }

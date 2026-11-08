@@ -1,10 +1,15 @@
+
 export interface Collection {
-  collection_id: number;
-  customer_id: number;
-  invoice_id: number;
+  payment_id: number;
+  AR_ID: number;
   payment_date: string;
-  amount_received: number;
-  payment_method: "Cash" | "Bank Transfer" | "E-Wallet" | "Other";
-  reference_number: string | null;
-  status: "Pending" | "Verified" | "Rejected";
+  payment_method: string | null;
+  amount_paid: string | number;
+}
+
+export interface CollectionCreate {
+  AR_ID: number;
+  payment_date: string;
+  payment_method: string | null;
+  amount_paid: number;
 }
