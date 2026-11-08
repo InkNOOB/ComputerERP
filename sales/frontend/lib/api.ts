@@ -25,6 +25,7 @@ import type { Collection, CollectionCreate } from "../types/payment";
 
 import type { SalesReturn, SalesReturnCreate } from "../types/return";
 
+
 export const quotationAPI = {
   getAll: () =>
     request<SalesQuotation[]>("/api/quotations"),
