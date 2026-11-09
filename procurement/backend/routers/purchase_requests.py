@@ -19,6 +19,7 @@ BASE_SELECT = """
     FROM public."PurchaseRequest" pr
     JOIN public."RestockRequest" rr ON rr."RR_ID" = pr."RestockRequestID"
     JOIN public."ITEM_MASTER" im    ON im."IM_ID" = rr."IM_ID"
+                                   AND im."ItemType" = 'Raw'
     JOIN public."WAREHOUSE" w       ON w."WH_ID" = rr."WH_ID"
 """
 
@@ -52,12 +53,20 @@ def create_purchase_request(body: PurchaseRequestIn):
         with get_db_connection() as conn:
             with conn.cursor(row_factory=dict_row) as cur:
                 cur.execute(
-                    'SELECT "approved_by" FROM public."RestockRequest" WHERE "RR_ID" = %s',
+                    '''SELECT rr."approved_by", im."ItemType"
+                       FROM public."RestockRequest" rr
+                       JOIN public."ITEM_MASTER" im ON im."IM_ID" = rr."IM_ID"
+                       WHERE rr."RR_ID" = %s''',
                     (body.restock_request_id,),
                 )
                 rr = cur.fetchone()
                 if not rr:
                     raise HTTPException(status_code=404, detail="Restock request not found")
+                if rr["ItemType"] != "Raw":
+                    raise HTTPException(
+                        status_code=409,
+                        detail="Only raw material restock requests go to Procurement",
+                    )
                 if rr["approved_by"] is None:
                     raise HTTPException(status_code=409, detail="Restock request is not approved yet")
 

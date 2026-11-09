@@ -12,8 +12,13 @@ def summary():
         with conn.cursor(row_factory=dict_row) as cur:
             cur.execute("""
                 SELECT
-                  (SELECT COUNT(*) FROM public."PurchaseRequest")                       AS purchase_requests,
-                  (SELECT COUNT(*) FROM public."PurchaseRequest" WHERE "Status" = 'Open') AS open_requests,
+                    (SELECT COUNT(*) FROM public."PurchaseRequest" pr
+                        JOIN public."RestockRequest" rr ON rr."RR_ID" = pr."RestockRequestID"
+                        JOIN public."ITEM_MASTER" im ON im."IM_ID" = rr."IM_ID" AND im."ItemType" = 'Raw') AS purchase_requests,
+                    (SELECT COUNT(*) FROM public."PurchaseRequest" pr
+                        JOIN public."RestockRequest" rr ON rr."RR_ID" = pr."RestockRequestID"
+                        JOIN public."ITEM_MASTER" im ON im."IM_ID" = rr."IM_ID" AND im."ItemType" = 'Raw'
+                        WHERE pr."Status" = 'Open') AS open_requests,
                   (SELECT COUNT(*) FROM public."PurchaseOrder")                         AS purchase_orders,
                   (SELECT COUNT(*) FROM public."GoodsReceived")                         AS goods_received,
                   (SELECT COUNT(*) FROM public."PurchaseInvoice")                       AS purchase_invoices
