@@ -1,10 +1,19 @@
 export interface Customer {
   customer_id: number;
-  customer_name: string;
-  email: string;
-  phone: string;
-  address: string;
+  name: string;
+  email: string | null;
+  contact: string | null;
+  address: string | null;
   customer_type: "Individual" | "Business";
-  status: "Active" | "Inactive";
-  created_at: string;
+  status: boolean;
 }
+
+export interface CustomerCreate {
+  name: string;
+  email: string | null;
+  contact: string | null;
+  address: string | null;
+  customer_type: "Individual" | "Business";
+}
+
+export type CustomerUpdate = Partial<CustomerCreate>;
