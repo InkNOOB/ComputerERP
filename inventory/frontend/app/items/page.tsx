@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import DashboardLayout from "../../components/dashboardlayout";
 
 interface Item {
@@ -31,26 +31,50 @@ const initialFormData = {
 
 export default function ItemsPage() {
   const [items, setItems] = useState<Item[]>([]);
+
+  // Search and Item Type Filters
   const [searchTerm, setSearchTerm] = useState("");
+  const [selectedType, setSelectedType] = useState<
+    "All" | "Raw" | "Finished"
+  >("All");
+  useEffect(() => {
+  const params = new URLSearchParams(window.location.search);
+  const type = params.get("type");
+
+  if (type === "Raw" || type === "Finished") {
+    setSelectedType(type);
+  } else {
+    setSelectedType("All");
+  }
+  }, []);
+
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+
+  // Form states
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
-
   const [formData, setFormData] = useState(initialFormData);
   const [saving, setSaving] = useState(false);
   const [formError, setFormError] = useState("");
 
-  const filteredItems = items.filter((item) =>
-  [
-    item.SKU,
-    item.Item_Name,
-    item.Category,
-    item.Brand,
-  ]
-    .join(" ")
-    .toLowerCase()
-    .includes(searchTerm.toLowerCase()));
+  // Filter items by search and selected type
+  const filteredItems = items.filter((item) => {
+    const matchesSearch = [
+      item.SKU,
+      item.Item_Name,
+      item.Category,
+      item.Brand,
+    ]
+      .join(" ")
+      .toLowerCase()
+      .includes(searchTerm.toLowerCase());
+
+    const matchesType =
+      selectedType === "All" || item.ItemType === selectedType;
+
+    return matchesSearch && matchesType;
+  });
 
   // Fetch items
   useEffect(() => {
@@ -77,11 +101,16 @@ export default function ItemsPage() {
   }, []);
 
   // Open Add Item form
-  const handleOpenAddForm = () => {
-    setEditingId(null);
-    setFormData(initialFormData);
-    setFormError("");
-    setShowForm(true);
+   const handleOpenAddForm = () => {
+  setEditingId(null);
+
+  setFormData({
+    ...initialFormData,
+    item_type: selectedType === "All" ? "" : selectedType,
+  });
+
+  setFormError("");
+  setShowForm(true);
   };
 
   // Edit selected item
@@ -113,7 +142,8 @@ export default function ItemsPage() {
   };
 
   // Add or Update Item
-  const handleSaveItem = async (e: React.FormEvent<HTMLFormElement>) => {e.preventDefault();
+  const handleSaveItem = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
 
     setSaving(true);
     setFormError("");
@@ -142,9 +172,7 @@ export default function ItemsPage() {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(
-          data.detail || "Unable to save item."
-        );
+        throw new Error(data.detail || "Unable to save item.");
       }
 
       if (isEditing) {
@@ -171,40 +199,41 @@ export default function ItemsPage() {
       setSaving(false);
     }
   };
-        // Delete Item
-        const handleDeleteItem = async (id: number) => {
-        const confirmed = window.confirm(
-            "Are you sure you want to delete this item?"
-        );
 
-        if (!confirmed) return;
+  // Delete Item
+  const handleDeleteItem = async (id: number) => {
+    const confirmed = window.confirm(
+      "Are you sure you want to delete this item?"
+    );
 
-        try {
-            const response = await fetch(
-            `${process.env.NEXT_PUBLIC_API_URL}/item_master/${id}`,
-            {
-                method: "DELETE",
-            }
-            );
+    if (!confirmed) return;
 
-            if (!response.ok) {
-            const data = await response.json();
-            throw new Error(data.detail || "Failed to delete item.");
-            }
-
-            setItems((prevItems) =>
-            prevItems.filter((item) => item.IM_ID !== id)
-            );
-        } catch (err) {
-            alert(
-            err instanceof Error
-                ? err.message
-                : "Unable to delete item."
-            );
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/item_master/${id}`,
+        {
+          method: "DELETE",
         }
-        };
+      );
 
-     return (
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.detail || "Failed to delete item.");
+      }
+
+      setItems((prevItems) =>
+        prevItems.filter((item) => item.IM_ID !== id)
+      );
+    } catch (err) {
+      alert(
+        err instanceof Error
+          ? err.message
+          : "Unable to delete item."
+      );
+    }
+  };
+
+  return (
     <DashboardLayout
       title="Item Master"
       description="Manage your raw materials and finished goods."
@@ -455,15 +484,38 @@ export default function ItemsPage() {
         </form>
       )}
 
+      {/* Search */}
       <div className="mt-6">
         <input
-            type="text"
-            placeholder="Search by SKU, item name, category, or brand..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full rounded-lg border border-[#DCE7EA] bg-white p-3 text-sm outline-none focus:border-[#35636B]"
+          type="text"
+          placeholder="Search by SKU, item name, category, or brand..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="w-full rounded-lg border border-[#DCE7EA] bg-white p-3 text-sm outline-none focus:border-[#35636B]"
         />
-        </div>
+      </div>
+
+      {/* Item Type Filters */}
+      <div className="mt-6 flex flex-wrap gap-2">
+        {(["All", "Raw", "Finished"] as const).map((type) => (
+          <button
+            key={type}
+            type="button"
+            onClick={() => setSelectedType(type)}
+            className={`rounded-xl px-5 py-2.5 text-sm font-semibold transition-colors ${
+              selectedType === type
+                ? "bg-[#35636B] text-white"
+                : "border border-[#DCE7EA] bg-white text-[#587176] hover:bg-[#F2F7F8]"
+            }`}
+          >
+            {type === "All"
+              ? "All Items"
+              : type === "Raw"
+                ? "Raw Materials"
+                : "Finished Goods"}
+          </button>
+        ))}
+      </div>
 
       {/* Item Table */}
       <div className="mt-6 overflow-x-auto rounded-2xl border border-[#DCE7EA] bg-white">
@@ -504,7 +556,8 @@ export default function ItemsPage() {
                 filteredItems.map((item) => (
                   <tr
                     key={item.IM_ID}
-                    className="border-t border-[#DCE7EA]">
+                    className="border-t border-[#DCE7EA]"
+                  >
                     <td className="p-4">{item.IM_ID}</td>
                     <td className="p-4">{item.SKU}</td>
                     <td className="p-4">{item.Item_Name}</td>
@@ -517,24 +570,24 @@ export default function ItemsPage() {
                     <td className="p-4">{item.Price ?? "-"}</td>
                     <td className="p-4">{item.status || "-"}</td>
                     <td className="p-4">
-                        <div className="flex gap-2">
-                            <button
-                            type="button"
-                            onClick={() => handleEditClick(item)}
-                            className="rounded-lg bg-[#E5F0F1] px-3 py-2 text-sm font-semibold text-[#35636B] hover:bg-[#D5E7E9]"
-                            >
-                            Edit
-                            </button>
+                      <div className="flex gap-2">
+                        <button
+                          type="button"
+                          onClick={() => handleEditClick(item)}
+                          className="rounded-lg bg-[#E5F0F1] px-3 py-2 text-sm font-semibold text-[#35636B] hover:bg-[#D5E7E9]"
+                        >
+                          Edit
+                        </button>
 
-                            <button
-                            type="button"
-                            onClick={() => handleDeleteItem(item.IM_ID)}
-                            className="rounded-lg bg-red-50 px-3 py-2 text-sm font-semibold text-red-600 hover:bg-red-100"
-                            >
-                            Delete
-                            </button>
-                        </div>
-                        </td>
+                        <button
+                          type="button"
+                          onClick={() => handleDeleteItem(item.IM_ID)}
+                          className="rounded-lg bg-red-50 px-3 py-2 text-sm font-semibold text-red-600 hover:bg-red-100"
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    </td>
                   </tr>
                 ))
               )}

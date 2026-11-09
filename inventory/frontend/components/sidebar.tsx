@@ -7,11 +7,11 @@ import UserProfile from "./userprofile";
 
 const navigation = [
   { name: "Dashboard", href: "/", icon: "▦" },
-  { name: "Items", href: "/items", icon: "▣" },
-  { name: "Warehouses", href: "/warehouses", icon: "▤" },
+  { name: "Item Master", href: "/items", icon: "▣" },
+  { name: "Warehouse Management", href: "/warehouses", icon: "▤" },
+  { name: "Approvals", href: "/approvals", icon: "✓" },
   { name: "Stock Actions", href: "/stock-actions", icon: "⇄" },
   { name: "Stock Ledger", href: "/stock-ledger", icon: "▤" },
-  { name: "Reports", href: "/reports", icon: "▥" },
 ];
 
 export default function Sidebar() {
@@ -30,7 +30,11 @@ export default function Sidebar() {
       {/* Navigation */}
       <nav className="flex flex-1 flex-col gap-2">
         {navigation.map((item) => {
-          const active = pathname === item.href;
+          const active =
+            item.href === "/"
+              ? pathname === "/"
+              : pathname === item.href ||
+                pathname.startsWith(`${item.href}/`);
 
           return (
             <Link
