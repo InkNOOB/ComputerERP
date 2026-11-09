@@ -1,0 +1,20 @@
+Sidebar panel	Modules under it
+Dashboard	Production overview and status summaries
+
+Products	
+1. Product Master
+2. Bill of Materials (BOM)
+
+Orders	
+3. Production Order
+4. Production Planning
+5. Production Monitoring
+6. Finished Goods
+
+Requests	
+7. Material Requirement
+8. Material Issuance
+
+Reports	
+9. Production Costing
+10. Production Reports

@@ -1,0 +1,24 @@
+No.	Type / Code	                                        Description
+1	@router.get("/summary")	                            Registers a GET API endpoint with the path /summary.
+2	def get_dashboard_summary():	                    Defines the function that handles the dashboard summary request.
+3	get_db_connection()	                                Establishes a connection to the Supabase database.
+4	with database_connection.cursor() as sql_cursor:	Creates a database cursor for executing SQL commands.
+5	sql_cursor.execute()	                            Executes the SQL query to count orders and calculate required and produced quantities.
+6	COALESCE()	                                        Replaces NULL results with 0 when there are no values to sum.
+7	fetchone()	                                        Retrieves the first row of the SQL query result.
+8	return	                                            Returns the retrieved database values as a Python dictionary, which FastAPI converts into JSON.
+9	.close()	                                        Closes the database connection to release resources.
+
+
+
+
+
+
+----------------------------------------------------------
+Overall execution flow
+GET /summary                Frontend requests dashboard statistics
+get_db_connection()         Connect to Supabase
+Execute SQL query           Count orders and calculate quantities
+fetchone()                  Retrieve calculated results
+return JSON                 Send statistics to Next.js
+finally:                    close connection

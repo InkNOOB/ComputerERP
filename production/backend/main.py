@@ -1,8 +1,54 @@
+#APIs connecting to PostgreSQL inside Supabase
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, Field
 from database import get_db_connection
 
+#API that connects different URL origins. Example:
+#Frontend runs on http://localhost:3000
+#Backend runs on http://127.0.0.1:8000
+from fastapi.middleware.cors import CORSMiddleware
+
+#APIs endpoints connecting frontend and backend to each other
+from sidebar_features import dashboard
+from sidebar_features import products
+from sidebar_features import orders
+from sidebar_features import requests
+from sidebar_features import reports
+
+#FastAPI pillars to connect end-to-end
 app = FastAPI()
+
+#API router connecting different URL origins
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://localhost:3000",
+        "http://127.0.0.1:3000"
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],)
+#API routers connecting frontend page and backend code
+app.include_router(
+    dashboard.router,
+    prefix="/dashboard",
+    tags=["Dashboard"])
+app.include_router(
+    products.router,
+    prefix="/products",
+    tags=["Products"])
+app.include_router(
+    orders.router,
+    prefix="/orders",
+    tags=["Orders"])
+app.include_router(
+    requests.router,
+    prefix="/requests",
+    tags=["Requests"])
+app.include_router(
+    reports.router,
+    prefix="/reports",
+    tags=["Reports"])
 
 # 1. ROOT PATH - Fixes the "Not Found" error on the homepage
 @app.get("/")
@@ -97,3 +143,4 @@ def create_production_order(order: ProductionOrderInput):
         # Ensure the database connection is closed
         if 'database_connection' in locals():
             database_connection.close()
+

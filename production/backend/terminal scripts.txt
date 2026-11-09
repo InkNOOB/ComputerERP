@@ -1,0 +1,34 @@
+# Locates Production department
+cd production\backend
+
+# Activates and opens the API Website
+python -m fastapi dev main.py
+
+---------------------------------------
+
+# Preparing Changes 
+git add production\backend\main.py
+
+# After Coding
+git status
+
+# Sharing Changes to the Repository
+git push
+
+# Starting work
+git pull
+
+## git pushing for backend or frontend
+git add production\ backend/frontend \main.py
+git commit -m "reserved string"
+git pull
+'if': git push -u origin department
+'else': git push
+
+## running the terminal of backend
+cd production\backend
+python -m fastapi dev main.py
+
+## running the terminal of frontend
+cd production\frontend
+npm run dev
