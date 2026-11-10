@@ -1,62 +1,74 @@
-
 "use client";
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import {
+  LayoutDashboard,
+  Package,
+  Warehouse,
+  ClipboardCheck,
+  ArrowLeftRight,
+  BookOpenText,
+} from "lucide-react";
 import UserProfile from "./userprofile";
 
 const navigation = [
-  { name: "Dashboard", href: "/", icon: "▦" },
-  { name: "Item Master", href: "/items", icon: "▣" },
-  { name: "Warehouse Management", href: "/warehouses", icon: "▤" },
-  { name: "Approvals", href: "/approvals", icon: "✓" },
-  { name: "Stock Actions", href: "/stock-actions", icon: "⇄" },
-  { name: "Stock Ledger", href: "/stock-ledger", icon: "▤" },
+  { name: "Dashboard", href: "/", Icon: LayoutDashboard },
+  { name: "Item Master", href: "/items", Icon: Package },
+  { name: "Warehouse Management", href: "/warehouses", Icon: Warehouse },
+  { name: "Approvals", href: "/approvals", Icon: ClipboardCheck },
+  { name: "Stock Actions", href: "/stock_actions", Icon: ArrowLeftRight },
+  { name: "Stock Ledger", href: "/stock_ledger", Icon: BookOpenText },
 ];
 
 export default function Sidebar() {
   const pathname = usePathname();
 
   return (
-    <aside className="flex h-full w-[198px] shrink-0 flex-col rounded-[24px] bg-[#35636B] p-3 text-white">
+    <aside className="flex h-full w-[220px] shrink-0 flex-col rounded-[24px] bg-[#365f68] p-3 text-white">
+
       {/* Department Header */}
       <div className="mb-5 flex items-center gap-2 px-2 py-3">
-        <div className="h-8 w-8 rounded-full bg-[#B8D5D7]" />
+        <div className="h-8 w-8 shrink-0 rounded-full bg-[#c0d9d9]" />
         <span className="text-sm font-bold tracking-wide">
           INVENTORY
         </span>
       </div>
 
       {/* Navigation */}
-      <nav className="flex flex-1 flex-col gap-2">
-        {navigation.map((item) => {
+      <nav className="flex flex-1 flex-col gap-4">
+        {navigation.map(({ name, href, Icon }) => {
           const active =
-            item.href === "/"
+            href === "/"
               ? pathname === "/"
-              : pathname === item.href ||
-                pathname.startsWith(`${item.href}/`);
+              : pathname === href ||
+                pathname.startsWith(`${href}/`);
 
           return (
-            <Link
-              key={item.name}
-              href={item.href}
-              className={`flex items-center gap-4 rounded-xl px-3 py-3 text-sm font-semibold transition-colors ${
-                active
-                  ? "bg-[#668F98] text-white"
-                  : "text-white hover:bg-[#527982]"
-              }`}
-            >
-              <span className="w-5 text-center text-lg">
-                {item.icon}
-              </span>
-              {item.name}
-            </Link>
+           <Link
+                key={name}
+                href={href}
+                className={`flex min-h-14 items-center justify-start gap-3 rounded-full px-4 py-3 text-base font-bold transition-colors ${
+                  active
+                    ? "bg-white text-[#365f68]"
+                    : "text-white hover:bg-[#668d98]"
+                }`}
+              >
+                <Icon
+                  className="h-5 w-5 shrink-0"
+                  strokeWidth={2}
+                />
+                <span className="min-w-0 whitespace-normal leading-tight">
+                  {name}
+                </span>
+              </Link>
           );
         })}
       </nav>
 
       {/* User Profile */}
       <UserProfile name="Inventory User" role="Employee" />
+
     </aside>
   );
 }

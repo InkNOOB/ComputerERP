@@ -3,7 +3,7 @@ import psycopg
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
-from routers import warehouses, item_master, dashboard
+from routers import warehouses, item_master, dashboard, stock_ledger
 
 app = FastAPI()
 
@@ -25,6 +25,7 @@ async def db_unavailable(request, exc):
 app.include_router(warehouses.router)
 app.include_router(item_master.router)
 app.include_router(dashboard.router)
+app.include_router(stock_ledger.router)
 
 @app.get("/")
 def home():

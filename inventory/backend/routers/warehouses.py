@@ -31,6 +31,39 @@ def list_warehouses(search: str | None = None):
             cur.execute(query, params)
             return cur.fetchall()
 
+@router.get("/stock")
+def list_warehouse_stock():
+    query = '''
+                SELECT
+                    s."STOCK_ID" AS stock_id,
+                    s."IM_ID" AS im_id,
+                    i."SKU" AS sku,
+                    i."Item_Name" AS item_name,
+                    i."ItemType" AS item_type,
+                    s."WH_ID" AS wh_id,
+                    w."Warehouse_Name" AS warehouse_name,
+                    s.quantity_on_hand,
+                    s.reorder_level,
+                    CASE
+                        WHEN s.quantity_on_hand <= s.reorder_level
+                        THEN 'Low Stock'
+                        ELSE 'Normal'
+                    END AS stock_status
+                FROM public."STOCK" AS s
+                INNER JOIN public."ITEM_MASTER" AS i
+                    ON s."IM_ID" = i."IM_ID"
+                INNER JOIN public."WAREHOUSE" AS w
+                    ON s."WH_ID" = w."WH_ID"
+                ORDER BY w."WH_ID", i."Item_Name"
+            '''
+    
+    with get_db_connection() as conn:
+        with conn.cursor(row_factory=dict_row) as cur:
+            cur.execute(query)
+            return cur.fetchall()
+    
+        
+
 @router.get("/{wh_id}")
 def get_warehouse(wh_id: int):
     with get_db_connection() as conn:

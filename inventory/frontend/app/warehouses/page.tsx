@@ -10,10 +10,32 @@ interface Warehouse {
   Location: string | null;
 }
 
+interface WarehouseStock {
+  stock_id: number;
+  im_id: number;
+  sku: string;
+  item_name: string;
+  item_type: string;
+  wh_id: number;
+  warehouse_name: string;
+  quantity_on_hand: number;
+  reorder_level: number;
+  stock_status: "Low Stock" | "Normal";
+}
+
 export default function WarehousesPage() {
   const [warehouses, setWarehouses] = useState<Warehouse[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
+
+  // Warehouse Management views
+const [activeView, setActiveView] = useState<"list" | "stock">("list");
+
+// Warehouse Stock states
+const [warehouseStock, setWarehouseStock] = useState<WarehouseStock[]>([]);
+const [stockLoading, setStockLoading] = useState(false);
+const [stockError, setStockError] = useState("");
 
   // Add Warehouse states
   const [showForm, setShowForm] = useState(false);
@@ -51,6 +73,30 @@ export default function WarehousesPage() {
       setLoading(false);
     }
   }
+
+    // Fetch Warehouse Stock records
+async function fetchWarehouseStock() {
+  try {
+    setStockLoading(true);
+    setStockError("");
+
+    const response = await fetch(`${apiUrl}/warehouses/stock`);
+
+    if (!response.ok) {
+      throw new Error("Failed to load warehouse stock.");
+    }
+
+    const data: WarehouseStock[] = await response.json();
+    setWarehouseStock(data);
+  } catch (err) {
+    setStockError(
+      err instanceof Error ? err.message : "Something went wrong."
+    );
+  } finally {
+    setStockLoading(false);
+  }
+}
+
 
   useEffect(() => {
     fetchWarehouses();
@@ -170,6 +216,22 @@ export default function WarehousesPage() {
     setLocation("");
     setError("");
   }
+    const filteredWarehouses = warehouses.filter((warehouse) => {
+  const search = searchTerm.toLowerCase().replace(/\s/g, "");
+
+  const warehouseName = warehouse.Warehouse_Name
+    .toLowerCase()
+    .replace(/\s/g, "");
+
+  const warehouseLocation = (warehouse.Location || "")
+    .toLowerCase()
+    .replace(/\s/g, "");
+
+  return (
+    warehouseName.includes(search) ||
+    warehouseLocation.includes(search)
+  );
+});
 
   return (
     <DashboardLayout
@@ -178,6 +240,44 @@ export default function WarehousesPage() {
     >
       <div className="rounded-2xl border border-[#DCE7EA] bg-white p-6">
 
+      {/* Warehouse View Navigation */}
+<div className="mb-5 flex flex-wrap gap-2">
+  <button
+    type="button"
+    onClick={() => {
+      setActiveView("list");
+      setError("");
+    }}
+    className={`rounded-xl px-4 py-2.5 text-sm font-semibold transition ${
+      activeView === "list"
+        ? "bg-[#35636B] text-white"
+        : "border border-[#DCE7EA] bg-white text-[#587176] hover:bg-[#F2F7F8]"
+    }`}
+  >
+    Warehouse List
+  </button>
+
+  <button
+    type="button"
+    onClick={() => {
+      setActiveView("stock");
+      fetchWarehouseStock();
+      setShowForm(false);
+      setShowEditForm(false);
+      setError("");
+    }}
+    className={`rounded-xl px-4 py-2.5 text-sm font-semibold transition ${
+      activeView === "stock"
+        ? "bg-[#35636B] text-white"
+        : "border border-[#DCE7EA] bg-white text-[#587176] hover:bg-[#F2F7F8]"
+    }`}
+  >
+    Warehouse Stock
+  </button>
+</div>
+
+    {activeView === "list" && (
+  <>
         {/* Warehouse Header */}
         <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
           <div>
@@ -392,15 +492,26 @@ export default function WarehousesPage() {
             </div>
           </form>
         )}
-
+            {/* Search Warehouse */}
+<div className="mb-5">
+  <input
+    type="text"
+    value={searchTerm}
+    onChange={(e) => setSearchTerm(e.target.value)}
+    placeholder="Search by warehouse name or location..."
+    className="w-full rounded-xl border border-[#DCE7EA] bg-white px-4 py-3 text-sm text-[#1F3338] outline-none focus:border-[#35636B] sm:max-w-md"
+  />
+</div>
         {/* Warehouse Table */}
         {loading ? (
           <p className="text-sm text-[#587176]">
             Loading warehouses...
           </p>
-        ) : warehouses.length === 0 ? (
+        ) : filteredWarehouses.length === 0 ? (
           <p className="text-sm text-[#587176]">
-            No warehouse records found.
+            {searchTerm.trim()
+  ? "No matching warehouses found."
+  : "No warehouse records found."}
           </p>
         ) : (
           <div className="overflow-x-auto">
@@ -423,7 +534,7 @@ export default function WarehousesPage() {
               </thead>
 
               <tbody>
-                {warehouses.map((warehouse) => (
+                {filteredWarehouses.map((warehouse) => (
                   <tr
                     key={warehouse.WH_ID}
                     className="border-b border-[#DCE7EA] last:border-0"
@@ -469,6 +580,79 @@ export default function WarehousesPage() {
             </table>
           </div>
         )}
+          </>
+        )}
+        {activeView === "stock" && (
+    <div>
+    {/* Warehouse Stock Header */}
+    <div className="mb-5">
+      <h2 className="text-lg font-bold text-[#1F3338]">
+        Warehouse Stock
+      </h2>
+      <p className="mt-1 text-sm text-[#587176]">
+        View the quantity of items stored in each warehouse.
+      </p>
+    </div>
+
+    {/* Error Message */}
+    {stockError && (
+      <div className="mb-4 rounded-lg bg-red-50 p-3 text-sm text-red-600">
+        {stockError}
+      </div>
+    )}
+
+    {/* Loading */}
+    {stockLoading ? (
+      <p className="text-sm text-[#587176]">
+        Loading warehouse stock...
+      </p>
+    ) : warehouseStock.length === 0 ? (
+      <p className="rounded-xl border border-dashed border-[#DCE7EA] bg-[#F2F7F8] p-6 text-center text-sm text-[#587176]">
+        No stock records found. Stock information will appear here once items are assigned to warehouses.
+      </p>
+      ) : (
+        <div className="overflow-x-auto">
+          <table className="w-full text-left text-sm">
+            <thead>
+              <tr className="border-b border-[#DCE7EA] text-[#587176]">
+                <th className="px-4 py-3">SKU</th>
+                <th className="px-4 py-3">Item Name</th>
+                <th className="px-4 py-3">Item Type</th>
+                <th className="px-4 py-3">Warehouse</th>
+                <th className="px-4 py-3">Quantity</th>
+                <th className="px-4 py-3">Reorder Level</th>
+                <th className="px-4 py-3">Status</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {warehouseStock.map((stock) => (
+                <tr key={stock.stock_id} className="border-b border-[#DCE7EA]">
+                  <td className="px-4 py-4">{stock.sku}</td>
+                  <td className="px-4 py-4">{stock.item_name}</td>
+                  <td className="px-4 py-4">{stock.item_type || "—"}</td>
+                  <td className="px-4 py-4">{stock.warehouse_name}</td>
+                  <td className="px-4 py-4">{stock.quantity_on_hand}</td>
+                  <td className="px-4 py-4">{stock.reorder_level}</td>
+                  <td className="px-4 py-4">
+                    <span
+                      className={
+                        stock.stock_status === "Low Stock"
+                          ? "rounded-full bg-red-50 px-3 py-1 text-xs font-semibold text-red-600"
+                          : "rounded-full bg-green-50 px-3 py-1 text-xs font-semibold text-green-700"
+                      }
+                    >
+                      {stock.stock_status}
+                    </span>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        )}
+        </div>
+  )}
       </div>
     </DashboardLayout>
   );
