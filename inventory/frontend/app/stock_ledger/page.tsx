@@ -16,6 +16,9 @@ interface StockLedger {
   transaction_type: string;
   quantity: number;
   actual_quantity: number | null;
+  stock_in: number;
+  stock_out: number;
+  balance: number;
   reference_no: string | null;
   logged_by: string;
   approved_by: string | null;
@@ -345,7 +348,9 @@ const fetchSummary = async () => {
                 <th className="p-4 font-bold">Item</th>
                 <th className="p-4 font-bold">Transaction Type</th>
                 <th className="p-4 font-bold">Warehouse</th>
-                <th className="p-4 font-bold">Quantity</th>
+                <th className="p-4 font-bold">IN</th>
+                <th className="p-4 font-bold">OUT</th>
+                <th className="p-4 font-bold">BALANCE</th>
                 <th className="p-4 font-bold">Reference No.</th>
                 <th className="p-4 font-bold">Logged By</th>
                 <th className="p-4 font-bold">Approved By</th>
@@ -388,8 +393,16 @@ const fetchSummary = async () => {
                       )}
                     </td>
 
-                    <td className="p-4 font-semibold">
-                      {transaction.actual_quantity ?? transaction.quantity}
+                    <td className="p-4 font-semibold text-green-700">
+                      {transaction.stock_in || 0}
+                    </td>
+
+                    <td className="p-4 font-semibold text-red-600">
+                      {transaction.stock_out || 0}
+                    </td>
+
+                    <td className="p-4 font-bold text-[#1F3338]">
+                      {transaction.balance}
                     </td>
 
                     <td className="p-4">
@@ -414,7 +427,7 @@ const fetchSummary = async () => {
               ) : (
                 <tr>
                   <td
-                    colSpan={10}
+                    colSpan={12}
                     className="p-10 text-center text-[#587176]"
                   >
                     No stock transactions found.
@@ -543,13 +556,30 @@ const fetchSummary = async () => {
 
               <div>
                 <p className="text-xs font-semibold uppercase text-[#587176]">
-                  Quantity
+                  Stock In (IN)
                 </p>
-                <p className="mt-1 text-[#1F3338]">
-                  {selectedTransaction.quantity}
+                <p className="mt-1 font-semibold text-green-700">
+                  {selectedTransaction.stock_in || 0}
                 </p>
               </div>
 
+              <div>
+                <p className="text-xs font-semibold uppercase text-[#587176]">
+                  Stock Out (OUT)
+                </p>
+                <p className="mt-1 font-semibold text-red-600">
+                  {selectedTransaction.stock_out || 0}
+                </p>
+              </div>
+
+              <div>
+                <p className="text-xs font-semibold uppercase text-[#587176]">
+                  Remaining Balance
+                </p>
+                <p className="mt-1 font-bold text-[#1F3338]">
+                  {selectedTransaction.balance}
+                </p>
+              </div>
               <div>
                 <p className="text-xs font-semibold uppercase text-[#587176]">
                   Actual Quantity

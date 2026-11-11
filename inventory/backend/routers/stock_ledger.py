@@ -52,7 +52,41 @@ def get_stock_ledger(
     if conditions:
         where_clause = "WHERE " + " AND ".join(conditions)
 
+    
     query = f"""
+        WITH ledger_balance AS (
+            SELECT
+                s."LogID",
+                s."IM_ID",
+                s."WH_ID",
+
+                CASE
+                    WHEN s."TransactionType" IN ('STOCK_IN', 'TRANSFER_IN')
+                    THEN ABS(COALESCE(s."ActualQuantity", s."Quantity"))
+                    WHEN s."TransactionType" = 'STOCK_ADJUSTMENT'
+                         AND s."Quantity" > 0
+                    THEN ABS(COALESCE(s."ActualQuantity", s."Quantity"))
+                    ELSE 0
+                END AS stock_in,
+
+                CASE
+                    WHEN s."TransactionType" IN ('STOCK_OUT', 'TRANSFER_OUT')
+                    THEN ABS(COALESCE(s."ActualQuantity", s."Quantity"))
+                    WHEN s."TransactionType" = 'STOCK_ADJUSTMENT'
+                         AND s."Quantity" < 0
+                    THEN ABS(COALESCE(s."ActualQuantity", s."Quantity"))
+                    ELSE 0
+                END AS stock_out,
+
+                SUM(s."Quantity") OVER (
+                    PARTITION BY s."IM_ID", s."WH_ID"
+                    ORDER BY s."LogDate", s."LogID"
+                    ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
+                ) AS balance
+
+            FROM public."STOCK_LEDGER" AS s
+        )
+
         SELECT
             s."LogID" AS log_id,
             s."IM_ID" AS im_id,
@@ -65,26 +99,41 @@ def get_stock_ledger(
             s."TransactionType" AS transaction_type,
             s."Quantity" AS quantity,
             s."ActualQuantity" AS actual_quantity,
+
+            lb.stock_in AS stock_in,
+            lb.stock_out AS stock_out,
+            lb.balance AS balance,
+
             s."ReferenceNo" AS reference_no,
             lu."Username" AS logged_by,
             au."Username" AS approved_by,
             s."LogDate" AS log_date,
             s."Remarks" AS remarks
+
         FROM public."STOCK_LEDGER" AS s
+
+        INNER JOIN ledger_balance AS lb
+            ON s."LogID" = lb."LogID"
+
         INNER JOIN public."ITEM_MASTER" AS i
             ON s."IM_ID" = i."IM_ID"
+
         INNER JOIN public."WAREHOUSE" AS w
             ON s."WH_ID" = w."WH_ID"
+
         LEFT JOIN public."WAREHOUSE" AS tw
             ON s."Target_WH_ID" = tw."WH_ID"
+
         LEFT JOIN public."User" AS lu
             ON s."LoggedBy" = lu."UserID"
+
         LEFT JOIN public."User" AS au
             ON s."ApprovedBy" = au."UserID"
-        {where_clause}
-        ORDER BY s."LogDate" DESC
-    """
 
+        {where_clause}
+
+        ORDER BY s."LogDate" DESC, s."LogID" DESC
+    """
     with get_db_connection() as conn:
         with conn.cursor(row_factory=dict_row) as cur:
             cur.execute(query, params)
