@@ -386,7 +386,7 @@ function SummaryCard({
   color,
 }: {
   title: string;
-  value: string;
+  value: string; 
   color: string;
 }) {
   return (
