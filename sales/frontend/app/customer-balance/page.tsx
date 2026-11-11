@@ -196,32 +196,7 @@ export default function CustomerBalancePage() {
 
   return (
     <main className="min-h-screen bg-gray-50 p-6 text-gray-900 md:p-10">
-      <div className="mx-auto max-w-7xl space-y-8">
-
-        <header className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <p className="text-sm font-medium text-gray-500">
-              Sales Module
-            </p>
-
-            <h1 className="mt-1 text-3xl font-bold">
-              Customer Balance
-            </h1>
-
-            <p className="mt-2 text-sm text-gray-500">
-              Review each customer's total invoices, payments, and outstanding balance.
-            </p>
-          </div>
-
-          <button
-            type="button"
-            onClick={() => void loadData()}
-            disabled={loading}
-            className="rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium hover:bg-gray-100 disabled:opacity-50"
-          >
-            {loading ? "Refreshing..." : "Refresh"}
-          </button>
-        </header>
+      <div className="mx-auto max-w-7xl space-y-8"> 
 
         {error && (
           <div className="rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700">

@@ -1,35 +1,30 @@
+
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 
 const menuItems = [
   { name: "Dashboard", href: "/", icon: "⌂" },
-  { name: "Customers", href: "/customers", icon: "♙" },
-  { name: "Sales Quotation", href: "/quotations", icon: "▤" },
-  { name: "Sales Order", href: "/orders", icon: "▣" },
-  { name: "Delivery", href: "/deliveries", icon: "↗" },
-  { name: "Sales Invoice", href: "/invoices", icon: "▧" },
-  {
-    name: "Accounts Receivable",
-    href: "/accounts-receivable",
-    icon: "₱",
-  },
-  { name: "Collection", href: "/collections", icon: "₱" },
-  { name: "Sales Return", href: "/returns", icon: "↩" },
-  {
-    name: "Customer Balance",
-    href: "/customer-balance",
-    icon: "◉",
-  },
+  { name: "Customer Management", href: "/customers", icon: "♙" },
+  { name: "Sales Processing", href: "/quotations", icon: "▤" },
+  { name: "Delivery & Returns", href: "/deliveries", icon: "⇢" },
+  { name: "Billing & Collections", href: "/invoices", icon: "▧" },
   { name: "Sales Reports", href: "/reports", icon: "▥" },
 ];
 
 export default function Sidebar() {
   const pathname = usePathname();
   const router = useRouter();
+  const [collapsed, setCollapsed] = useState(false);
+  const [loggingOut, setLoggingOut] = useState(false);
 
   async function handleLogout() {
+    if (loggingOut) return;
+
+    setLoggingOut(true);
+
     try {
       const apiUrl =
         process.env.NEXT_PUBLIC_API_URL ?? "http://127.0.0.1:8000";
@@ -44,25 +39,57 @@ export default function Sidebar() {
       }
 
       router.replace("/login");
-      router.refresh();
     } catch {
       alert("Unable to log out. Please check your connection and try again.");
+      setLoggingOut(false);
     }
   }
 
   return (
-    <aside className="flex min-h-screen w-64 shrink-0 flex-col border-r border-gray-200 bg-white">
-      <div className="border-b border-gray-200 px-6 py-6">
-        <h1 className="text-xl font-bold text-gray-900">Sales ERP</h1>
-        <p className="mt-1 text-xs text-gray-500">
-          Sales &amp; Customer Management
-        </p>
+    <aside
+      className={`sticky top-0 flex h-screen shrink-0 flex-col border-r border-slate-200 bg-white transition-[width] duration-200 ${
+        collapsed ? "w-[76px]" : "w-64"
+      }`}
+    >
+      {/* Brand */}
+      <div
+        className={`flex h-[88px] shrink-0 items-center border-b border-slate-200 ${
+          collapsed ? "justify-center px-2" : "justify-between px-5"
+        }`}
+      >
+        <div className={collapsed ? "hidden" : "min-w-0"}>
+          <h1 className="text-xl font-extrabold tracking-tight text-slate-900">
+            Sales ERP
+          </h1>
+          <p className="mt-1 text-[11px] font-medium text-slate-500">
+            Sales &amp; Customer Management
+          </p>
+        </div>
+
+        {collapsed && (
+          <span className="text-xl font-extrabold text-blue-700">
+            S
+          </span>
+        )}
+
+        <button
+          type="button"
+          onClick={() => setCollapsed(!collapsed)}
+          aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+          title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-lg font-semibold text-slate-600 transition hover:bg-slate-100 hover:text-blue-700"
+        >
+          {collapsed ? "»" : "«"}
+        </button>
       </div>
 
-      <nav className="flex-1 space-y-1 overflow-y-auto p-3">
-        <p className="px-3 pb-2 pt-3 text-xs font-semibold uppercase tracking-wider text-gray-400">
-          Main Menu
-        </p>
+      {/* Navigation */}
+      <nav className="flex-1 space-y-1 overflow-x-hidden overflow-y-auto p-3">
+        {!collapsed && (
+          <p className="px-3 pb-3 pt-3 text-[10px] font-bold uppercase tracking-[0.15em] text-slate-400">
+            Main Menu
+          </p>
+        )}
 
         {menuItems.map((item) => {
           const active =
@@ -75,36 +102,56 @@ export default function Sidebar() {
             <Link
               key={item.href}
               href={item.href}
-              className={`flex items-center gap-3 rounded-lg px-3 py-3 text-sm font-medium transition ${
+              title={collapsed ? item.name : undefined}
+              aria-current={active ? "page" : undefined}
+              className={`flex min-h-11 items-center rounded-lg text-sm font-semibold transition ${
+                collapsed ? "justify-center px-2" : "gap-3 px-3"
+              } ${
                 active
-                  ? "bg-gray-900 text-white"
-                  : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
+                  ? "bg-blue-700 text-white shadow-sm"
+                  : "text-slate-600 hover:bg-slate-100 hover:text-blue-700"
               }`}
             >
-              <span className="w-5 text-center" aria-hidden="true">
+              <span
+                className="flex w-6 shrink-0 items-center justify-center text-lg"
+                aria-hidden="true"
+              >
                 {item.icon}
               </span>
-              {item.name}
+
+              {!collapsed && (
+                <span className="truncate">{item.name}</span>
+              )}
             </Link>
           );
         })}
       </nav>
 
-      <div className="mt-auto border-t border-gray-200 p-4">
+      {/* Logout */}
+      <div className="shrink-0 border-t border-slate-200 p-3">
         <button
           type="button"
           onClick={handleLogout}
-          className="flex w-full items-center gap-3 rounded-lg px-3 py-3 text-sm font-medium text-red-600 transition hover:bg-red-50"
+          disabled={loggingOut}
+          title={collapsed ? "Log out" : undefined}
+          className={`flex min-h-11 w-full items-center rounded-lg text-sm font-semibold text-red-600 transition hover:bg-red-50 disabled:opacity-50 ${
+            collapsed ? "justify-center px-2" : "gap-3 px-3"
+          }`}
         >
-          <span className="w-5 text-center" aria-hidden="true">
+          <span className="flex w-6 shrink-0 items-center justify-center text-lg">
             ↪
           </span>
-          Log out
+
+          {!collapsed && (
+            <span>{loggingOut ? "Logging out..." : "Log out"}</span>
+          )}
         </button>
 
-        <p className="mt-3 px-3 text-xs text-gray-400">
-          Sales Module ERP
-        </p>
+        {!collapsed && (
+          <p className="mt-3 px-3 text-[10px] font-medium text-slate-400">
+            Sales Module ERP
+          </p>
+        )}
       </div>
     </aside>
   );

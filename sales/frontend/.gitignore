@@ -77,3 +77,7 @@ env/
 
 # IDE
 .vscode/
+
+# Python cache files
+__pycache__/
+*.py[cod]

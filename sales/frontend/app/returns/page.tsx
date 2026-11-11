@@ -286,20 +286,8 @@ export default function ReturnsPage() {
       <div className="mx-auto max-w-7xl space-y-8">
 
         <header>
-          <p className="text-sm font-medium text-gray-500">
-            Sales Module / Sales Return
-          </p>
 
           <div className="mt-2 flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
-            <div>
-              <h1 className="text-3xl font-bold tracking-tight">
-                Sales Returns
-              </h1>
-
-              <p className="mt-2 text-sm text-gray-600">
-                Manage returned items and customer refund amounts.
-              </p>
-            </div>
 
             <button
               type="button"

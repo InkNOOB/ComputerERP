@@ -1,4 +1,4 @@
-import type { SalesQuotation } from "../types/quotation";
+
 
 import type {
   SalesOrder,
@@ -26,13 +26,6 @@ import type { Collection, CollectionCreate } from "../types/payment";
 import type { SalesReturn, SalesReturnCreate } from "../types/return";
 
 
-export const quotationAPI = {
-  getAll: () =>
-    request<SalesQuotation[]>("/api/quotations"),
-
-  getById: (id: number) =>
-    request<SalesQuotation>(`/api/quotations/${id}`),
-};
 import type {
   Customer,
   CustomerCreate,
@@ -202,5 +195,24 @@ export const salesReturnAPI = {
     request<SalesReturn>("/api/returns", {
       method: "POST",
       body: JSON.stringify(data),
+    }),
+};
+
+import type {
+  SalesQuotation,
+  QuotationStatus,
+} from "../types/quotation";
+
+export const quotationAPI = {
+  getAll: () =>
+    request<SalesQuotation[]>("/api/quotations"),
+
+  getById: (id: number) =>
+    request<SalesQuotation>(`/api/quotations/${id}`),
+
+  updateStatus: (id: number, status: QuotationStatus) =>
+    request<SalesQuotation>(`/api/quotations/${id}/status`, {
+      method: "PATCH",
+      body: JSON.stringify({ status }),
     }),
 };
