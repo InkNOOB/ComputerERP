@@ -52,7 +52,6 @@ if not DATABASE_URL:
     Base.metadata.create_all(bind=engine)
 
 # Register routers.
-# Register routers.
 app.include_router(customers_router)
 app.include_router(quotations_router)
 app.include_router(orders_router)
