@@ -82,9 +82,33 @@ export default function InvoicePanel() {
   const [showForm, setShowForm] = useState(false);
   const [orderId, setOrderId] = useState("");
   const [invoiceDate, setInvoiceDate] = useState(getLocalDate);
-  const [dueDate, setDueDate] = useState("");
+const [dueDate, setDueDate] = useState("1");
 
   const today = getLocalDate();
+  function calculateDueDate(invoiceDate: string, months: number) {
+  if (!invoiceDate) return "";
+
+  const date = new Date(`${invoiceDate}T00:00:00`);
+
+  const originalDay = date.getDate();
+
+  date.setDate(1);
+  date.setMonth(date.getMonth() + months);
+
+  const lastDay = new Date(
+    date.getFullYear(),
+    date.getMonth() + 1,
+    0
+  ).getDate();
+
+  date.setDate(Math.min(originalDay, lastDay));
+
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+
+  return `${year}-${month}-${day}`;
+}
 
   const loadData = useCallback(async () => {
     setLoading(true);
@@ -207,16 +231,12 @@ export default function InvoicePanel() {
       return;
     }
 
-    if (dueDate && dueDate < invoiceDate) {
-      setError("Due date cannot be earlier than invoice date.");
-      return;
-    }
 
     const data: SalesInvoiceCreate = {
-      order_id: Number(orderId),
-      invoice_date: invoiceDate,
-      due_date: dueDate || null,
-    };
+  order_id: Number(orderId),
+  invoice_date: invoiceDate,
+  due_date: calculateDueDate(invoiceDate, Number(dueDate)),
+};
 
     setSaving(true);
 
@@ -225,7 +245,7 @@ export default function InvoicePanel() {
 
       setOrderId("");
       setInvoiceDate(getLocalDate());
-      setDueDate("");
+      setDueDate("1");
       setShowForm(false);
 
       await loadData();
@@ -242,19 +262,6 @@ export default function InvoicePanel() {
 
   return (
     <div className="space-y-5">
-      <div className="flex justify-end">
-  <button
-    type="button"
-    onClick={() => {
-      setError("");
-      setShowForm(true);
-    }}
-    disabled={availableOrders.length === 0 || loading}
-    className="rounded-lg bg-slate-900 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-slate-700 disabled:cursor-not-allowed disabled:opacity-50"
-  >
-    + Create Sales Invoice
-  </button>
-</div>
 
       {error && (
         <div
@@ -305,17 +312,32 @@ export default function InvoicePanel() {
             placeholder="Search invoice or order number..."
             className="w-full rounded-lg border border-slate-300 px-4 py-2.5 text-sm text-slate-900 outline-none placeholder:text-slate-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 sm:max-w-sm"
           />
+
+          <div className="flex justify-end">
+  <button
+    type="button"
+    onClick={() => {
+      setError("");
+      setShowForm(true);
+    }}
+    disabled={availableOrders.length === 0 || loading}
+    className="rounded-lg bg-blue-900 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
+  >
+    + Create Sales Invoice
+  </button>
+</div>
         </div>
+        
 
         <div className="overflow-x-auto">
           <table className="w-full min-w-[850px] text-left text-sm">
             <thead className="bg-slate-50 text-slate-600">
               <tr>
-                <th className="px-5 py-4 font-semibold">Invoice No.</th>
-                <th className="px-5 py-4 font-semibold">Order No.</th>
-                <th className="px-5 py-4 font-semibold">Invoice Date</th>
-                <th className="px-5 py-4 font-semibold">Due Date</th>
-                <th className="px-5 py-4 text-right font-semibold">
+                <th className="px-5 py-4 text-center font-semibold">Invoice No.</th>
+                <th className="px-5 py-4 text-center font-semibold">Order No.</th>
+                <th className="px-5 py-4 text-center font-semibold">Invoice Date</th>
+                <th className="px-5 py-4 text-center font-semibold">Due Date</th>
+                <th className="px-5 py-4 text-center font-semibold">
                   Total Due
                 </th>
                 <th className="px-5 py-4 text-center font-semibold">
@@ -352,7 +374,7 @@ export default function InvoicePanel() {
                   return (
                     <tr
                       key={invoice.invoice_id}
-                      className="transition hover:bg-slate-50"
+                      className="transition hover:bg-slate-50 text-center"
                     >
                       <td className="whitespace-nowrap px-5 py-4 font-semibold text-slate-900">
                         SI-{String(invoice.invoice_id).padStart(4, "0")}
@@ -370,7 +392,7 @@ export default function InvoicePanel() {
                         {formatDate(invoice.due_date)}
                       </td>
 
-                      <td className="whitespace-nowrap px-5 py-4 text-right font-semibold text-slate-900">
+                      <td className="whitespace-nowrap px-5 py-4 text-center font-semibold text-slate-900">
                         {money(invoice.total_due)}
                       </td>
 
@@ -525,17 +547,29 @@ export default function InvoicePanel() {
               </div>
 
               <div>
-                <label className="mb-2 block text-sm font-semibold text-slate-700">
-                  Due Date (Optional)
-                </label>
+  <label className="mb-2 block text-sm font-semibold text-slate-700">
+    Payment Due Period
+  </label>
 
-                <input
-                  type="date"
-                  min={invoiceDate}
-                  value={dueDate}
-                  onChange={(event) => setDueDate(event.target.value)}
-                  className="w-full rounded-lg border border-slate-300 px-4 py-3 text-sm text-slate-900 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
-                />
+  <select
+    value={dueDate}
+    onChange={(event) => setDueDate(event.target.value)}
+    className="w-full rounded-lg border border-slate-300 px-4 py-3 text-sm text-slate-900 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+  >
+    <option value="1">1 Month</option>
+    <option value="3">3 Months</option>
+    <option value="6">6 Months</option>
+    <option value="12">1 Year</option>
+  </select>
+
+  <p className="mt-2 text-xs text-slate-500">
+    Calculated Due Date:{" "}
+    <span className="font-semibold text-slate-700">
+      {formatDate(calculateDueDate(invoiceDate, Number(dueDate)))}
+    </span>
+  </p>
+</div>
+
               </div>
 
               <div className="flex flex-col-reverse justify-end gap-3 border-t border-slate-200 pt-5 sm:flex-row">
@@ -559,7 +593,6 @@ export default function InvoicePanel() {
               </div>
             </div>
           </div>
-        </div>
       )}
     </div>
   );

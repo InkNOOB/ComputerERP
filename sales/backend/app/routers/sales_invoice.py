@@ -3,6 +3,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
+from decimal import Decimal
 
 from app.database import get_db
 from app.models.sales_invoice import SalesInvoice
@@ -11,6 +12,7 @@ from app.schemas.sales_invoice import (
     SalesInvoiceCreate,
     SalesInvoiceResponse,
 )
+from app.models.accounts_receivable import AccountsReceivable
 
 router = APIRouter(
     prefix="/api/invoices",
@@ -45,23 +47,18 @@ def get_invoice(
 
     return invoice
 
-
-# Create a sales invoice from an existing sales order.
-@router.post(
-    "",
-    response_model=SalesInvoiceResponse,
-    status_code=status.HTTP_201_CREATED,
-)
+# Create a sales invoice and its corresponding accounts receivable record.
+@router.post("", response_model=SalesInvoiceResponse, status_code=201)
 def create_invoice(
     invoice_data: SalesInvoiceCreate,
-    db: Session = Depends(get_db),
+    db: Session = Depends(get_db)
 ):
     order = db.get(SalesOrder, invoice_data.order_id)
 
     if order is None:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Sales order not found.",
+            status_code=404,
+            detail="Sales order not found."
         )
 
     existing_invoice = db.scalar(
@@ -72,8 +69,8 @@ def create_invoice(
 
     if existing_invoice is not None:
         raise HTTPException(
-            status_code=status.HTTP_409_CONFLICT,
-            detail="This sales order already has an invoice.",
+            status_code=409,
+            detail="This sales order already has an invoice."
         )
 
     invoice = SalesInvoice(
@@ -84,7 +81,25 @@ def create_invoice(
     )
 
     try:
+        # Save the invoice temporarily to generate its ID.
         db.add(invoice)
+        db.flush()
+
+        # Automatically create the corresponding AR record.
+        amount_due = Decimal(str(invoice.total_due))
+
+        accounts_receivable = AccountsReceivable(
+            invoice_id=invoice.invoice_id,
+            customer_id=order.customer_id,
+            amount_due=amount_due,
+            amount_paid=Decimal("0"),
+            balance=amount_due,
+            status="Unpaid",
+        )
+
+        db.add(accounts_receivable)
+
+        # Save both records together.
         db.commit()
         db.refresh(invoice)
 
@@ -93,6 +108,6 @@ def create_invoice(
     except IntegrityError:
         db.rollback()
         raise HTTPException(
-            status_code=status.HTTP_409_CONFLICT,
-            detail="This sales order already has an invoice.",
+            status_code=409,
+            detail="Unable to create invoice and accounts receivable record."
         )

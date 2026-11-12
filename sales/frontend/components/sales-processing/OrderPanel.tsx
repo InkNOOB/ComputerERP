@@ -391,7 +391,7 @@ export default function OrdersPage() {
                 setError("");
                 setShowForm(true);
               }}
-              className="whitespace-nowrap rounded-lg bg-green-700 px-4 py-2 text-sm font-semibold text-white hover:bg-green-800"
+              className="whitespace-nowrap rounded-lg bg-blue-700 px-4 py-2 text-sm font-semibold text-white hover:bg-green-800"
             >
               + Create Sales Order
             </button>
@@ -402,13 +402,13 @@ export default function OrdersPage() {
           <table className="w-full text-left text-sm">
             <thead className="bg-slate-50 text-xs uppercase tracking-wide text-slate-600">
               <tr>
-                <th className="whitespace-nowrap px-5 py-3">
+                <th className="whitespace-nowrap text-center px-5 py-3">
                   Order No.
                 </th>
                 <th className="whitespace-nowrap px-5 py-3">
                   Customer
                 </th>
-                <th className="whitespace-nowrap px-5 py-3">
+                <th className="whitespace-nowrap text-center px-5 py-3">
                   Order Date
                 </th>
                 <th className="whitespace-nowrap px-5 py-3 text-center">
@@ -417,7 +417,7 @@ export default function OrdersPage() {
                 <th className="whitespace-nowrap px-5 py-3">
                   Total Amount
                 </th>
-                <th className="whitespace-nowrap px-5 py-3">
+                <th className="whitespace-nowrap px-5 py-3 text-center">
                   Status
                 </th>
               </tr>
@@ -454,7 +454,7 @@ export default function OrdersPage() {
                       key={order.order_id}
                       className="transition-colors hover:bg-slate-50"
                     >
-                      <td className="whitespace-nowrap px-5 py-4 font-semibold text-slate-800">
+                      <td className="whitespace-nowrap text-center px-5 py-4 font-semibold text-slate-800">
                         SO-{String(order.order_id).padStart(4, "0")}
                       </td>
 
@@ -463,7 +463,7 @@ export default function OrdersPage() {
                           `Customer #${order.customer_id}`}
                       </td>
 
-                      <td className="whitespace-nowrap px-5 py-4 text-slate-600">
+                      <td className="whitespace-nowrap text-center px-5 py-4 text-slate-600">
                         {formatDate(order.order_date)}
                       </td>
 
@@ -476,7 +476,7 @@ export default function OrdersPage() {
                       </td>
 
                       <td className="whitespace-nowrap px-5 py-4">
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-2 items-center">
                           <select
                             value={order.status}
                             disabled={isUpdating}

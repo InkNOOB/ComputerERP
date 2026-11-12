@@ -37,3 +37,7 @@ class PaymentCollection(Base):
         Numeric,
         nullable=False,
     )
+transaction_number: Mapped[str | None] = mapped_column(
+    String(100),
+    nullable=True
+)

@@ -113,11 +113,11 @@ export default function QuotationPanel() {
 
   const getStatusStyle = (status: QuotationStatus) => {
     const styles: Record<QuotationStatus, string> = {
-      Draft: "bg-slate-100 text-slate-700",
-      Sent: "bg-blue-100 text-blue-700",
-      Accepted: "bg-emerald-100 text-emerald-700",
-      Rejected: "bg-rose-100 text-rose-700",
-      Expired: "bg-amber-100 text-amber-700",
+      Draft: "bg-slate-100 text-slate-700 text-center",
+      Sent: "bg-blue-100 text-blue-700 text-center",
+      Accepted: "bg-emerald-100 text-emerald-700 text-center",
+      Rejected: "bg-rose-100 text-rose-700 text-center",
+      Expired: "bg-amber-100 text-amber-700 text-center",
     };
 
     return styles[status];
@@ -276,10 +276,10 @@ export default function QuotationPanel() {
               <table className="w-full min-w-[850px] text-left text-sm">
                 <thead className="bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
                   <tr>
-                    <th className="px-5 py-4 font-semibold">
+                    <th className="px-5 text-center py-4 font-semibold">
                       Quotation No.
                     </th>
-                    <th className="px-5 py-4 font-semibold">
+                    <th className="px-5 text-center py-4 font-semibold">
                       Customer ID
                     </th>
                     <th className="px-5 py-4 font-semibold">
@@ -288,10 +288,10 @@ export default function QuotationPanel() {
                     <th className="px-5 py-4 text-center font-semibold">
                       Items
                     </th>
-                    <th className="px-5 py-4 text-right font-semibold">
+                    <th className="px-5 py-4 text-center font-semibold">
                       Total Amount
                     </th>
-                    <th className="px-5 py-4 font-semibold">
+                    <th className="px-5 py-4 text-center font-semibold">
                       Status
                     </th>
                   </tr>
@@ -303,11 +303,11 @@ export default function QuotationPanel() {
                       key={quotation.quotation_id}
                       className="transition hover:bg-slate-50"
                     >
-                      <td className="whitespace-nowrap px-5 py-4 font-semibold text-slate-900">
+                      <td className="whitespace-nowrap  text-center px-5 py-4 font-semibold text-slate-900">
                         QT-{String(quotation.quotation_id).padStart(4, "0")}
                       </td>
 
-                      <td className="px-5 py-4 text-slate-600">
+                      <td className="px-5 text-center py-4 text-slate-600">
                         #{quotation.customer_id}
                       </td>
 
@@ -319,21 +319,21 @@ export default function QuotationPanel() {
                         {quotation.details?.length ?? 0}
                       </td>
 
-                      <td className="whitespace-nowrap px-5 py-4 text-right font-semibold text-slate-900">
+                      <td className="whitespace-nowrap px-5 py-4 text-center font-semibold text-slate-900">
                         {formatCurrency(Number(quotation.total_amount) || 0)}
                       </td>
 
                       <td className="px-5 py-4">
-                        <div className="flex flex-col items-start gap-2">
+                        <div className="flex flex-col text-center items-start gap-2">
                           <span
-                            className={`rounded-full px-3 py-1 text-xs font-semibold ${getStatusStyle(
+                            className={`rounded-full px-3 py-1 text-xs text-center font-semibold ${getStatusStyle(
                               quotation.status
                             )}`}
                           >
                             {quotation.status}
                           </span>
 
-                          <select
+                          <select 
                             aria-label={`Update status for quotation ${quotation.quotation_id}`}
                             value={quotation.status}
                             disabled={
@@ -345,7 +345,7 @@ export default function QuotationPanel() {
                                 event.target.value as QuotationStatus
                               )
                             }
-                            className="max-w-full rounded-md border border-slate-300 bg-white px-2 py-1.5 text-xs text-slate-700 outline-none focus:border-blue-600 disabled:cursor-wait disabled:opacity-60"
+                            className="max-w-full rounded-md border text-center border-slate-300 bg-white px-2 py-1.5 text-xs text-slate-700 outline-none focus:border-blue-600 disabled:cursor-wait disabled:opacity-60"
                           >
                             {statuses
                               .filter((status) => status !== "All")

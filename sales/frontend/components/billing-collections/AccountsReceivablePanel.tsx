@@ -311,11 +311,11 @@ export default function AccountsReceivablePanel() {
                   <tr>
                     <th className="px-4 py-3 text-center">AR No.</th>
                     <th className="px-4 py-3 text-center">Invoice No.</th>
-                    <th className="px-4 py-3">Customer</th>
-                    <th className="px-4 py-3">Due Date</th>
-                    <th className="px-4 py-3 text-right">Amount Due</th>
-                    <th className="px-4 py-3 text-right">Amount Paid</th>
-                    <th className="px-4 py-3 text-right">Balance</th>
+                    <th className="px-4 py-3 text-center">Customer</th>
+                    <th className="px-4 py-3 text-center">Due Date</th>
+                    <th className="px-4 py-3 text-center">Amount Due</th>
+                    <th className="px-4 py-3 text-center">Amount Paid</th>
+                    <th className="px-4 py-3 text-center">Balance</th>
                     <th className="px-4 py-3 text-center">Status</th>
                   </tr>
                 </thead>
@@ -329,31 +329,31 @@ export default function AccountsReceivablePanel() {
                         key={record.AR_ID}
                         className="transition-colors hover:bg-slate-50"
                       >
-                        <td className="px-4 py-3 text-center font-semibold text-slate-700">
+                        <td className="px-4 py-3 text-center font-semibold text-slate-700 text-center">
                           AR-{record.AR_ID}
                         </td>
 
-                        <td className="px-4 py-3 text-center font-medium text-blue-700">
+                        <td className="px-4 py-3 text-center font-medium text-blue-700 text-center">
                           INV-{record.invoice_id}
                         </td>
 
-                        <td className="px-4 py-3 font-medium text-slate-800">
+                        <td className="px-4 py-3 font-medium text-slate-800 text-center">
                           {record.customer_name}
                         </td>
 
-                        <td className="px-4 py-3 whitespace-nowrap text-slate-600">
+                        <td className="px-4 py-3 whitespace-nowrap text-slate-600 text-center">
                           {formatDate(record.due_date)}
                         </td>
 
-                        <td className="px-4 py-3 text-right tabular-nums text-slate-700">
+                        <td className="px-4 py-3 tabular-nums text-slate-700 text-center">
                           {money(record.amount_due)}
                         </td>
 
-                        <td className="px-4 py-3 text-right tabular-nums text-green-700">
+                        <td className="px-4 py-3 tabular-nums text-green-700 text-center">
                           {money(record.amount_paid)}
                         </td>
 
-                        <td className="px-4 py-3 text-right font-semibold tabular-nums text-slate-900">
+                        <td className="px-4 py-3 text-center font-semibold tabular-nums text-slate-900">
                           {money(record.balance)}
                         </td>
 

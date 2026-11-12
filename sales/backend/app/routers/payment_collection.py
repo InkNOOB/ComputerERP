@@ -79,12 +79,12 @@ def create_payment_collection(
         )
 
     payment = PaymentCollection(
-        AR_ID=payment_data.AR_ID,
-        payment_date=payment_data.payment_date,
-        payment_method=payment_data.payment_method,
-        amount_paid=payment_amount,
-    )
-
+    AR_ID=payment_data.AR_ID,
+    payment_date=payment_data.payment_date,
+    payment_method=payment_data.payment_method,
+    transaction_number=payment_data.transaction_number,
+    amount_paid=payment_amount,
+)
     ar_record.amount_paid = (
         Decimal(str(ar_record.amount_paid)) + payment_amount
     )

@@ -265,8 +265,7 @@ export default function ReportsPage() {
           <option value="month">This Month</option>
           <option value="year">This Year</option>
         </select>
-      </section>
-
+</section>
       {/* Error Message */}
       {error && (
         <div
@@ -347,15 +346,30 @@ export default function ReportsPage() {
           </section>
 
           {/* Report Summary */}
-          <section className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
-            <div className="border-b border-slate-200 p-5">
-              <h2 className="font-semibold text-slate-900">
-                Report Summary
-              </h2>
-              <p className="mt-1 text-sm text-slate-500">
-                Overview of sales transactions and current receivables.
-              </p>
-            </div>
+<section className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+  <div className="border-b border-slate-200 p-5">
+    <div className="flex flex-wrap items-center justify-between gap-3">
+      <h2 className="font-semibold text-slate-900">
+        Report Summary
+      </h2>
+
+      <button
+        type="button"
+        onClick={exportCSV}
+        disabled={loading || !!error}
+        className="inline-flex items-center justify-center gap-2 rounded-lg bg-blue-700 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-green-800 disabled:cursor-not-allowed disabled:opacity-50"
+      >
+        <span aria-hidden="true">↓</span>
+        Export to CSV
+      </button>
+    </div>
+
+    <p className="mt-1 text-sm text-slate-500">
+      Overview of sales transactions and current receivables.
+    </p>
+  </div>
+</section>
+
 
             <div className="overflow-x-auto">
               <table className="w-full text-left text-sm">
@@ -422,17 +436,7 @@ export default function ReportsPage() {
               </table>
             </div>
             <div className="flex justify-end border-t border-slate-200 bg-white p-5">
-  <button
-    type="button"
-    onClick={exportCSV}
-    disabled={loading || !!error}
-    className="inline-flex items-center justify-center gap-2 rounded-lg bg-green-700 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-green-800 disabled:cursor-not-allowed disabled:opacity-50"
-  >
-    <span aria-hidden="true">↓</span>
-    Export to CSV
-  </button>
-</div>
-          </section>
+          </div>
 
           <p className="text-xs text-slate-400">
             Note: Outstanding receivables show the current balance and are

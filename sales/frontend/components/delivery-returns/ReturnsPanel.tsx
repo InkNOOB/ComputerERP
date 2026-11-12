@@ -364,28 +364,6 @@ export default function ReturnsPanel() {
 
   return (
     <div className="space-y-5">
-      <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
-        <div>
-          <h2 className="text-xl font-bold text-slate-900">
-            Sales Returns
-          </h2>
-          <p className="mt-1 text-sm text-slate-500">
-            Manage returned items and customer refund amounts.
-          </p>
-        </div>
-
-        <button
-          type="button"
-          onClick={() => {
-            setError("");
-            setShowForm(true);
-          }}
-          disabled={availableDetails.length === 0 || loading}
-          className="rounded-lg bg-slate-900 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-slate-700 disabled:cursor-not-allowed disabled:opacity-50"
-        >
-          + Create Sales Return
-        </button>
-      </div>
 
       {error && (
         <div
@@ -434,22 +412,37 @@ export default function ReturnsPanel() {
             placeholder="Search return, order, item, or customer..."
             className="w-full rounded-lg border border-slate-300 px-4 py-2.5 text-sm text-slate-900 outline-none placeholder:text-slate-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 sm:max-w-sm"
           />
+
+          <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
+
+        <button
+          type="button"
+          onClick={() => {
+            setError("");
+            setShowForm(true);
+          }}
+          disabled={availableDetails.length === 0 || loading}
+          className="rounded-lg bg-blue-900 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-slate-700 disabled:cursor-not-allowed disabled:opacity-50"
+        >
+          + Create Sales Return
+        </button>
+      </div>
         </div>
 
         <div className="overflow-x-auto">
           <table className="w-full min-w-[1050px] text-left text-sm">
             <thead className="bg-slate-50 text-slate-600">
               <tr>
-                <th className="px-5 py-4 font-semibold">Return No.</th>
-                <th className="px-5 py-4 font-semibold">Order No.</th>
-                <th className="px-5 py-4 font-semibold">Invoice No.</th>
-                <th className="px-5 py-4 font-semibold">Customer</th>
-                <th className="px-5 py-4 font-semibold">Returned Item</th>
-                <th className="px-5 py-4 font-semibold">Return Date</th>
+                <th className="px-5 py-4 text-center font-semibold">Return No.</th>
+                <th className="px-5 py-4 text-center font-semibold">Order No.</th>
+                <th className="px-5 py-4 text-center font-semibold">Invoice No.</th>
+                <th className="px-5 py-4 text-center font-semibold">Customer</th>
+                <th className="px-5 py-4 text-center font-semibold">Returned Item</th>
+                <th className="px-5 py-4 text-center font-semibold">Return Date</th>
                 <th className="px-5 py-4 text-center font-semibold">
                   Quantity
                 </th>
-                <th className="px-5 py-4 text-right font-semibold">
+                <th className="px-5 py-4 text-center font-semibold">
                   Return Amount
                 </th>
               </tr>
@@ -491,13 +484,13 @@ export default function ReturnsPanel() {
                   return (
                     <tr
                       key={record.return_id}
-                      className="transition hover:bg-slate-50"
+                      className="transition hover:bg-slate-50 text-center"
                     >
                       <td className="whitespace-nowrap px-5 py-4 font-semibold text-slate-900">
                         RET-{String(record.return_id).padStart(4, "0")}
                       </td>
 
-                      <td className="whitespace-nowrap px-5 py-4 text-slate-700">
+                      <td className="whitespace-nowrap px-5 py-4 text-slate-700 text-center">
                         {relatedOrder
                           ? `SO-${String(relatedOrder.order_id).padStart(4, "0")}`
                           : "—"}

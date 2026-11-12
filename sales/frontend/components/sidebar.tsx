@@ -47,7 +47,7 @@ export default function Sidebar() {
 
   return (
     <aside
-      className={`sticky top-0 flex h-screen shrink-0 flex-col border-r border-slate-200 bg-white transition-[width] duration-200 ${
+      className={`sticky top-0 flex h-screen shrink-0 flex-col border-r border-slate-200 bg-#365f68 transition-[width] duration-200 ${
         collapsed ? "w-[76px]" : "w-64"
       }`}
     >

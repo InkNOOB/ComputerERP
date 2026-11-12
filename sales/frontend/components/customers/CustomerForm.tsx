@@ -103,7 +103,7 @@ export default function CustomerForm({
           required
           maxLength={150}
           className={inputClass}
-          placeholder="Enter customer name"
+          placeholder="Last Name, First Name"
           value={formData.name}
           onChange={(event) =>
             handleChange("name", event.target.value)

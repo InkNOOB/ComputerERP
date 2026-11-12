@@ -292,7 +292,7 @@ export default function DeliveryPanel() {
           <button
             type="button"
             onClick={() => setShowForm(true)}
-            className="rounded-lg bg-green-700 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-green-800"
+            className="rounded-lg bg-blue-700 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-green-800"
           >
             + Create Delivery
           </button>
@@ -312,25 +312,25 @@ export default function DeliveryPanel() {
           <table className="w-full text-left text-sm">
             <thead className="bg-slate-50 text-xs uppercase tracking-wide text-slate-600">
               <tr>
-                <th className="whitespace-nowrap px-5 py-3">
+                <th className="whitespace-nowrap px-5 py-3 text-center">
                   Delivery No.
                 </th>
                 <th className="whitespace-nowrap px-5 py-3 text-center">
                   Order No.
                 </th>
-                <th className="whitespace-nowrap px-5 py-3">
+                <th className="whitespace-nowrap px-5 py-3 text-center">
                   Customer
                 </th>
-                <th className="whitespace-nowrap px-5 py-3">
+                <th className="whitespace-nowrap px-5 py-3 text-center">
                   Warehouse
                 </th>
-                <th className="whitespace-nowrap px-5 py-3">
+                <th className="whitespace-nowrap px-5 py-3 text-center">
                   Delivery Date
                 </th>
-                <th className="px-5 py-3">
+                <th className="px-5 py-3 text-center">
                   Address
                 </th>
-                <th className="whitespace-nowrap px-5 py-3">
+                <th className="whitespace-nowrap px-5 py-3 text-center">
                   Status
                 </th>
               </tr>
@@ -362,7 +362,7 @@ export default function DeliveryPanel() {
                   return (
                     <tr
                       key={delivery.delivery_id}
-                      className="transition-colors hover:bg-slate-50"
+                      className="transition-colors hover:bg-slate-50 text-center"
                     >
                       <td className="whitespace-nowrap px-5 py-4 font-semibold text-slate-800">
                         DEL-{String(delivery.delivery_id).padStart(4, "0")}

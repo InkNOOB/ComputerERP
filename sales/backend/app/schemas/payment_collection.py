@@ -3,13 +3,28 @@ from datetime import date
 from decimal import Decimal
 
 from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 
 class PaymentCollectionCreate(BaseModel):
     AR_ID: int = Field(gt=0)
     payment_date: date
     payment_method: str | None = None
+    transaction_number: str | None = None
     amount_paid: Decimal = Field(gt=0)
+
+    @model_validator(mode="after")
+    def validate_transaction_number(self):
+        if self.payment_method == "E-Wallet":
+            if not self.transaction_number or not self.transaction_number.strip():
+                raise ValueError(
+                    "Transaction number is required for E-Wallet payments."
+                )
+            self.transaction_number = self.transaction_number.strip()
+        else:
+            self.transaction_number = None
+
+        return self
 
 
 class PaymentCollectionResponse(BaseModel):
@@ -19,4 +34,5 @@ class PaymentCollectionResponse(BaseModel):
     AR_ID: int
     payment_date: date
     payment_method: str | None
+    transaction_number: str | None = None
     amount_paid: Decimal

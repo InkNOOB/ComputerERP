@@ -16,7 +16,7 @@ import type { SalesInvoice } from "../types/invoice";
 import type { AccountsReceivable } from "../types/accounts-receivable";
 import type { SalesReturn } from "../types/return";
 
-const PAGE_TITLE = "Sales Analytics Dashboard";
+const PAGE_TITLE = "Sales Analytics";
 
 const money = (value: string | number | null | undefined) => {
   const amount = Number(value ?? 0);
@@ -357,7 +357,7 @@ const chartPadding = {
   const chartAxisLabels = [0, 0.25, 0.5, 0.75, 1];
 
   return (
-    <div className="min-h-full space-y-6 bg-slate-50 p-4 sm:p-6">
+    <div className="min-h-full space-y-6 bg-#8FB1B8-50 p-4 sm:p-6">
       {/* Dashboard Header */}
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
@@ -627,13 +627,13 @@ const chartPadding = {
             <table className="w-full min-w-[650px] text-left text-sm">
               <thead>
                 <tr className="border-b border-slate-200 bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
-                  <th className="px-4 py-3">Rank</th>
-                  <th className="px-4 py-3">Product</th>
-                  <th className="px-4 py-3">SKU</th>
-                  <th className="px-4 py-3 text-right">
+                  <th className="px-4 py-3 text-left">Rank</th>
+                  <th className="px-4 py-3 text-center">Product</th>
+                  <th className="px-4 py-3 text-center">SKU</th>
+                  <th className="px-4 py-3 text-center">
                     Quantity Sold
                   </th>
-                  <th className="px-4 py-3 text-right">
+                  <th className="px-4 py-3 text-center">
                     Net Sales
                   </th>
                 </tr>
@@ -645,28 +645,28 @@ const chartPadding = {
                     key={product.IM_ID}
                     className="border-b border-slate-100 last:border-0 hover:bg-slate-50"
                   >
-                    <td className="px-4 py-4 font-semibold text-slate-500">
+                    <td className="px-4 py-4 font-semibold text-slate-500 ">
                       #{index + 1}
                     </td>
 
-                    <td className="px-4 py-4">
-                      <p className="font-semibold text-slate-800">
+                    <td className="px-4 py-4 text-center ">
+                      <p className="font-semibold text-slate-800 text-center">
                         {product.name}
                       </p>
-                      <p className="text-xs text-slate-500">
+                      <p className="text-xs text-slate-500 text-center">
                         Item ID: {product.IM_ID}
                       </p>
                     </td>
 
-                    <td className="px-4 py-4 text-slate-600">
+                    <td className="px-4 py-4 text-slate-600 text-center">
                       {product.sku}
                     </td>
 
-                    <td className="px-4 py-4 text-right font-semibold text-slate-800">
+                    <td className="px-4 py-4 text-center font-semibold text-slate-800">
                       {product.quantity.toLocaleString()}
                     </td>
 
-                    <td className="px-4 py-4 text-right font-semibold text-slate-800">
+                    <td className="px-4 py-4 text-center font-semibold text-slate-800">
                       {money(product.sales)}
                     </td>
                   </tr>
@@ -818,10 +818,10 @@ const chartPadding = {
             <table className="w-full min-w-[550px] text-left text-sm">
               <thead>
                 <tr className="border-b border-slate-200 bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
-                  <th className="px-4 py-3">Invoice ID</th>
-                  <th className="px-4 py-3">Order ID</th>
-                  <th className="px-4 py-3">Invoice Date</th>
-                  <th className="px-4 py-3 text-right">Total Due</th>
+                  <th className="px-4 py-3 text-left">Invoice ID</th>
+                  <th className="px-4 py-3 text-center">Order ID</th>
+                  <th className="px-4 py-3 text-center">Invoice Date</th>
+                  <th className="px-4 py-3 text-center">Total Due</th>
                 </tr>
               </thead>
 
@@ -831,16 +831,16 @@ const chartPadding = {
                     key={invoice.invoice_id}
                     className="border-b border-slate-100 last:border-0 hover:bg-slate-50"
                   >
-                    <td className="px-4 py-4 font-semibold text-blue-700">
+                    <td className="px-4 py-4 font-semibold text-blue-700 text-left">
                       #{invoice.invoice_id}
                     </td>
-                    <td className="px-4 py-4 text-slate-600">
+                    <td className="px-4 py-4 text-slate-600 text-center">
                       #{invoice.order_id}
                     </td>
-                    <td className="px-4 py-4 text-slate-600">
+                    <td className="px-4 py-4 text-slate-600 text-center">
                       {formatDate(invoice.invoice_date)}
                     </td>
-                    <td className="px-4 py-4 text-right font-semibold text-slate-800">
+                    <td className="px-4 py-4 font-semibold text-slate-800 text-center">
                       {money(invoice.total_due)}
                     </td>
                   </tr>
@@ -850,10 +850,6 @@ const chartPadding = {
           </div>
         )}
       </section>
-
-      <div className="pb-2 text-center text-xs text-slate-400">
-        Team 4 · Sales &amp; Customer Management
-      </div>
     </div>
   );
 }
