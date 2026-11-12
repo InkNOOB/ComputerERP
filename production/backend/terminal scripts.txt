@@ -18,11 +18,11 @@ git push
 # Starting work
 git pull
 
-## git pushing for backend or frontend
-git add production\ backend/frontend \main.py
+## git pushing
+git add production
 git commit -m "reserved string"
 git pull
-'if': git push -u origin department
+'if': git push -u origin production
 'else': git push
 
 ## running the terminal of backend
@@ -32,3 +32,126 @@ python -m fastapi dev main.py
 ## running the terminal of frontend
 cd production\frontend
 npm run dev
+
+# PRODUCTION SUBSYSTEM – API FETCH PROCEDURES
+
+Base URL:
+`http://127.0.0.1:8000`
+
+Swagger documentation:
+`http://127.0.0.1:8000/docs`
+
+## A. GET – Retrieve data
+
+**Purpose:** Fetch existing records without changing the database.
+
+Example 1 – Retrieve production requests:
+
+- Method: GET
+- Endpoint: `/requests/production-requests/`
+- Body: None
+
+Example 2 – Retrieve material requirements:
+
+- Method: GET
+- Endpoint: `/requests/material-requirements/?pm_id=1`
+- Query parameter: `pm_id`
+- Body: None
+
+Expected responses:
+- 200 OK – Request successful.
+- `[]` – No matching records found.
+
+## B. POST – Create a new record
+
+**Purpose:** Insert a new record into the database.
+
+Existing Production endpoint:
+
+- Method: POST
+- Endpoint: `/orders/`
+
+Example JSON body:
+
+```json
+{
+  "PM_ID": 1,
+  "WH_ID": 1,
+  "QuantityRequired": 10,
+  "StartDate": "2026-11-12T08:00:00",
+  "Deadline": "2026-11-20T17:00:00"
+}
+```
+
+Expected responses:
+- 200/201 – Record created successfully (depending on endpoint configuration).
+- 400 – Invalid input or business rule violation.
+- 500 – Server/database error.
+
+IMPORTANT:
+This POST creates an actual manufacturing record in `PRODUCTION`. It does NOT create an Inventory replenishment request in `ProductionOrder`.
+
+Inventory's POST operation for `ProductionOrder` is still pending implementation by the Inventory team.
+
+## C. PATCH – Update an existing record
+
+**Purpose:** Modify selected information in an existing record.
+
+Example 1 – Accept a Production Replenishment Request:
+
+- Method: PATCH
+- Endpoint: `/requests/production-requests/{production_id}/accept`
+- Example URL: `/requests/production-requests/1/accept`
+- Body: None
+
+Expected responses:
+- 200 – Request successfully accepted.
+- 400 – Request is not reviewed or is not Pending.
+- 404 – Production request does not exist.
+- 500 – Server/database error.
+
+Example 2 – Update manufacturing progress:
+
+- Method: PATCH
+- Endpoint: `/orders/{production_id}/progress`
+- Example URL: `/orders/1/progress`
+
+Example JSON body:
+
+```json
+{
+  "QuantityProduced": 4
+}
+```
+
+Expected responses:
+- 200 – Progress updated.
+- 400 – Invalid quantity or completed order.
+- 404 – Production order does not exist.
+
+## D. How to test using Swagger
+
+1. Start the FastAPI backend:
+   `python -m fastapi dev main.py`
+2. Open `http://127.0.0.1:8000/docs`.
+3. Find the endpoint.
+4. Expand it.
+5. Click **Try it out**.
+6. Enter required parameters or JSON body.
+7. Click **Execute**.
+8. Check the HTTP status code and response body.
+
+## E. Important HTTP method differences
+
+| Method | Action | Database effect |
+|---|---|---|
+| GET | Retrieve | No change |
+| POST | Create | Inserts a record |
+| PATCH | Update | Modifies selected fields |
+| DELETE | Remove | Deletes a record |
+
+Remember:
+- GET does not create records.
+- POST creates records.
+- PATCH updates existing records.
+- Requests and status changes do not automatically change inventory stock.

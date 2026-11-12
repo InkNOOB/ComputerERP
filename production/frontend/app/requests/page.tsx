@@ -1,25 +1,27 @@
+
 "use client";
 
 import { useEffect, useState } from "react";
 
 type MaterialRequirement = {
-  Production_ID: number;
   PM_ID: number;
-  QuantityRequired: number;
   IM_ID: number;
   SKU: string;
   Item_Name: string;
   unit_of_measure: string;
   MaterialRequired: number;
-  TotalMaterialRequired: number;
 };
 
 export default function RequestsPage() {
   const [activeFunction, setActiveFunction] = useState("material-requirement");
 
+  // Selected product: 1 = Gaming PC, 4 = Office PC
+  const [selectedPM, setSelectedPM] = useState(1);
+
   const [materials, setMaterials] = useState<MaterialRequirement[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [refreshKey, setRefreshKey] = useState(0);
 
   useEffect(() => {
     if (activeFunction !== "material-requirement") {
@@ -32,16 +34,15 @@ export default function RequestsPage() {
 
       try {
         const response = await fetch(
-          "http://127.0.0.1:8000/requests/material-requirements/"
+          `http://127.0.0.1:8000/requests/material-requirements/?pm_id=${selectedPM}`
         );
 
         if (!response.ok) {
           throw new Error("Failed to retrieve material requirements.");
         }
 
-        const data = await response.json();
+        const data: MaterialRequirement[] = await response.json();
         setMaterials(data);
-
       } catch (error) {
         console.error(error);
         setError("Unable to load material requirements.");
@@ -51,7 +52,7 @@ export default function RequestsPage() {
     };
 
     fetchMaterialRequirements();
-  }, [activeFunction]);
+  }, [activeFunction, selectedPM, refreshKey]);
 
   return (
     <div className="p-8 space-y-6">
@@ -83,7 +84,7 @@ export default function RequestsPage() {
           </h2>
 
           <p className="text-sm text-gray-500 mt-2">
-            Calculate the raw materials required for production.
+            View the raw materials required for each product.
           </p>
         </button>
 
@@ -111,23 +112,35 @@ export default function RequestsPage() {
 
         {activeFunction === "material-requirement" && (
           <>
-            <div className="flex justify-between items-center mb-5">
+            <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4 mb-5">
+
               <div>
                 <h2 className="text-lg font-semibold text-gray-800">
                   Material Requirements
                 </h2>
 
                 <p className="text-sm text-gray-500 mt-1">
-                  Raw material calculations based on production orders.
+                  View the Bill of Materials for the selected product.
                 </p>
               </div>
 
-              <button
-                onClick={() => setActiveFunction("material-requirement")}
-                className="px-4 py-2 text-sm rounded-lg bg-[#365f68] text-white hover:bg-[#294b53]"
-              >
-                Refresh
-              </button>
+              <div className="flex items-center gap-3">
+                <select
+                  value={selectedPM}
+                  onChange={(event) => setSelectedPM(Number(event.target.value))}
+                  className="border border-gray-300 rounded-lg px-3 py-2 text-sm text-gray-700"
+                >
+                  <option value={1}>Gaming PC</option>
+                  <option value={4}>Office PC</option>
+                </select>
+
+                <button
+                  onClick={() => setRefreshKey((current) => current + 1)}
+                  className="px-4 py-2 text-sm rounded-lg bg-[#365f68] text-white hover:bg-[#294b53]"
+                >
+                  Refresh
+                </button>
+              </div>
             </div>
 
             {loading ? (
@@ -144,32 +157,20 @@ export default function RequestsPage() {
 
                   <thead className="bg-gray-50 text-gray-600">
                     <tr>
-                      <th className="p-3">Production ID</th>
-                      <th className="p-3">PM ID</th>
                       <th className="p-3">Material SKU</th>
                       <th className="p-3">Material Name</th>
-                      <th className="p-3">Production Qty</th>
-                      <th className="p-3">Per Product</th>
-                      <th className="p-3">Total Required</th>
+                      <th className="p-3">Quantity per Product</th>
                       <th className="p-3">Unit</th>
                     </tr>
                   </thead>
 
                   <tbody>
                     {materials.length > 0 ? (
-                      materials.map((material, index) => (
+                      materials.map((material) => (
                         <tr
-                          key={`${material.Production_ID}-${material.IM_ID}-${index}`}
+                          key={material.IM_ID}
                           className="border-b border-gray-100 hover:bg-gray-50"
                         >
-                          <td className="p-3">
-                            {material.Production_ID}
-                          </td>
-
-                          <td className="p-3">
-                            {material.PM_ID}
-                          </td>
-
                           <td className="p-3">
                             {material.SKU}
                           </td>
@@ -178,16 +179,8 @@ export default function RequestsPage() {
                             {material.Item_Name}
                           </td>
 
-                          <td className="p-3">
-                            {material.QuantityRequired}
-                          </td>
-
-                          <td className="p-3">
-                            {material.MaterialRequired}
-                          </td>
-
                           <td className="p-3 font-semibold">
-                            {material.TotalMaterialRequired}
+                            {material.MaterialRequired}
                           </td>
 
                           <td className="p-3">
@@ -198,10 +191,10 @@ export default function RequestsPage() {
                     ) : (
                       <tr>
                         <td
-                          colSpan={8}
+                          colSpan={4}
                           className="p-8 text-center text-gray-500"
                         >
-                          No material requirements found.
+                          No material requirements found for this product.
                         </td>
                       </tr>
                     )}

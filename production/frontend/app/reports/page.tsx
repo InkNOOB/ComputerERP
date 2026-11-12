@@ -68,6 +68,11 @@ export default function ReportsPage() {
     },
   ];
 
+  const completionRate =
+  report && report.total_quantity_required > 0
+    ? (report.total_quantity_produced / report.total_quantity_required) * 100
+    : 0;
+
   return (
     <div className="p-8 space-y-6">
 
@@ -119,7 +124,42 @@ export default function ReportsPage() {
                 </h2>
               </div>
             ))}
+          </div>
 
+          {/* PRODUCTION COMPLETION RATE */}
+          <div className="bg-white border border-gray-200 rounded-xl p-6">
+            <div className="flex justify-between items-center mb-3">
+              <div>
+                <h2 className="text-lg font-semibold text-gray-800">
+                  Production Completion Rate
+                </h2>
+
+                <p className="text-sm text-gray-500 mt-1">
+                  Overall manufacturing progress based on required quantity.
+                </p>
+              </div>
+
+              <span className="text-2xl font-bold text-[#365f68]">
+                {completionRate.toFixed(2)}%
+              </span>
+            </div>
+
+            <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
+              <div
+                className="bg-[#668d98] h-3 rounded-full transition-all duration-500"
+                style={{ width: `${completionRate}%` }}
+              />
+            </div>
+
+            <div className="flex justify-between text-sm text-gray-500 mt-3">
+              <span>
+                Produced: {report?.total_quantity_produced ?? 0}
+              </span>
+
+              <span>
+                Required: {report?.total_quantity_required ?? 0}
+              </span>
+            </div>
           </div>
 
           {/* PRODUCTION STATUS */}
@@ -180,6 +220,6 @@ export default function ReportsPage() {
         </>
       )}
 
-    </div>
+    </div> 
   );
 }
