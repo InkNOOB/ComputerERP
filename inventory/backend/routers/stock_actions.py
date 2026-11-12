@@ -177,13 +177,49 @@ def stock_in(data: StockInRequest):
                     )
                 )
 
+                
                 stock = cur.fetchone()
+
+            # 7. Record Stock In in Stock Ledger
+            cur.execute(
+                '''
+                INSERT INTO public."STOCK_LEDGER" (
+                    "IM_ID",
+                    "WH_ID",
+                    "TransactionType",
+                    "Quantity",
+                    "ActualQuantity",
+                    "ReferenceNo",
+                    "LoggedBy",
+                    "LogDate",
+                    "Remarks"
+                )
+                VALUES (
+                    %s, %s, 'STOCK_IN',
+                    %s, %s, %s, %s,
+                    CURRENT_TIMESTAMP, %s
+                )
+                RETURNING "LogID"
+                ''',
+                (
+                    data.im_id,
+                    data.wh_id,
+                    data.actual_quantity,
+                    data.actual_quantity,
+                    data.reference_no,
+                    data.logged_by,
+                    data.remarks
+                )
+            )
+
+            ledger = cur.fetchone()
 
             return {
                 "message": "Stock In recorded successfully",
                 "stock": stock,
                 "ledger_id": ledger["LogID"]
             }
+
         
 @router.post("/stock-out", status_code=201)
 def stock_out(data: StockOutRequest):
