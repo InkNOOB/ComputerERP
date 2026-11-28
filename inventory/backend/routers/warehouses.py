@@ -4,7 +4,7 @@ from pydantic import BaseModel, Field
 from psycopg import errors
 from psycopg.rows import dict_row
 from database import get_db_connection
-from security import require_inventory_user, require_inventory_admin
+from auth import require_inventory, require_admin
 
 router = APIRouter(prefix="/warehouses", tags=["Warehouses"])
 
@@ -26,7 +26,7 @@ SELECT = 'SELECT "WH_ID", "Warehouse_Name", "Location" FROM public."WAREHOUSE"'
 @router.get("/")
 def list_warehouses(
     search: str | None = None,
-    user: dict = Depends(require_inventory_user)
+    user: dict = Depends(require_inventory)
 ):
     query = SELECT
     params: tuple = ()
@@ -45,7 +45,7 @@ def list_warehouses(
 
 @router.get("/stock")
 def list_warehouse_stock(
-    user: dict = Depends(require_inventory_user)
+    user: dict = Depends(require_inventory)
 ):
     query = '''
         SELECT
@@ -80,7 +80,7 @@ def list_warehouse_stock(
 @router.get("/{wh_id}")
 def get_warehouse(
     wh_id: int,
-    user: dict = Depends(require_inventory_user)
+    user: dict = Depends(require_inventory)
 ):
     with get_db_connection() as conn:
         with conn.cursor(row_factory=dict_row) as cur:
@@ -96,7 +96,7 @@ def get_warehouse(
 @router.post("/", status_code=201)
 def create_warehouse(
     w: WarehouseIn,
-    user: dict = Depends(require_inventory_admin)
+    user: dict = Depends(require_admin)
 ):
     with get_db_connection() as conn:
         with conn.cursor(row_factory=dict_row) as cur:
@@ -113,7 +113,7 @@ def create_warehouse(
 def update_warehouse(
     wh_id: int,
     w: WarehouseUpdate,
-    user: dict = Depends(require_inventory_admin)
+    user: dict = Depends(require_admin)
 ):
     fields = w.model_dump(exclude_unset=True)
 
@@ -141,7 +141,7 @@ def update_warehouse(
 @router.delete("/{wh_id}", status_code=204)
 def delete_warehouse(
     wh_id: int,
-    user: dict = Depends(require_inventory_admin)
+    user: dict = Depends(require_admin)
 ):
     try:
         with get_db_connection() as conn:

@@ -2,14 +2,14 @@
 from fastapi import APIRouter, Depends
 from psycopg.rows import dict_row
 from database import get_db_connection
-from security import require_inventory_user
+from auth import require_inventory
 
 router = APIRouter(prefix="/dashboard", tags=["Dashboard"])
 
 
 @router.get("/summary")
 def get_dashboard_summary(
-    user: dict = Depends(require_inventory_user)
+    user: dict = Depends(require_inventory)
 ):
 
     with get_db_connection() as conn:

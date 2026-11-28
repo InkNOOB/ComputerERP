@@ -3,7 +3,7 @@ from fastapi import APIRouter, HTTPException, Depends
 from psycopg.rows import dict_row
 from database import get_db_connection
 from datetime import date, timedelta
-from security import require_inventory_user
+from auth import require_inventory
 
 router = APIRouter(
     prefix="/stock_ledger",
@@ -17,7 +17,7 @@ def get_stock_ledger(
     start_date: date | None = None,
     end_date: date | None = None,
     search: str | None = None,
-    user: dict = Depends(require_inventory_user)
+    user: dict = Depends(require_inventory)
 ):
     conditions = []
     params = []
@@ -164,7 +164,7 @@ WITH ledger_balance AS (
 def get_stock_ledger_summary(
     start_date: date | None = None,
     end_date: date | None = None,
-    user: dict = Depends(require_inventory_user)
+    user: dict = Depends(require_inventory)
 ):
     conditions = []
     params = []
@@ -225,7 +225,7 @@ def get_stock_ledger_summary(
 @router.get("/{log_id}")
 def get_stock_ledger_details(
     log_id: int,
-    user: dict = Depends(require_inventory_user)
+    user: dict = Depends(require_inventory)
 ):
     query = """
         SELECT

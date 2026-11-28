@@ -4,7 +4,7 @@ from pydantic import BaseModel, Field
 from typing import Literal
 from psycopg.rows import dict_row
 from database import get_db_connection
-from security import require_inventory_user, require_inventory_admin
+from auth import require_inventory, require_admin
 
 
 router = APIRouter(
@@ -61,7 +61,7 @@ class StockTransferRequest(BaseModel):
 @router.post("/stock-in", status_code=201)
 def stock_in(
     data: StockInRequest,
-    user: dict = Depends(require_inventory_user)
+    user: dict = Depends(require_inventory)
 ):
     with get_db_connection() as conn:
         with conn.cursor(row_factory=dict_row) as cur:
@@ -237,7 +237,7 @@ def stock_in(
 @router.post("/stock-out", status_code=201)
 def stock_out(
     data: StockOutRequest,
-    user: dict = Depends(require_inventory_user)
+    user: dict = Depends(require_inventory)
 ):
     with get_db_connection() as conn:
         with conn.cursor(row_factory=dict_row) as cur:
@@ -360,7 +360,7 @@ def stock_out(
 @router.post("/adjustment", status_code=201)
 def stock_adjustment(
     data: StockAdjustmentRequest,
-    user: dict = Depends(require_inventory_admin)
+    user: dict = Depends(require_admin)
 ):
     with get_db_connection() as conn:
         with conn.cursor(row_factory=dict_row) as cur:
@@ -494,7 +494,7 @@ def stock_adjustment(
 @router.post("/transfer", status_code=201)
 def stock_transfer(
     data: StockTransferRequest,
-    user: dict = Depends(require_inventory_user)
+    user: dict = Depends(require_inventory)
 ):
 
     # 1. Source and destination must be different

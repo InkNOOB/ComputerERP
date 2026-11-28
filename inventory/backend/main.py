@@ -1,15 +1,26 @@
 
 import psycopg
-from fastapi import FastAPI
+from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
-from routers import warehouses, item_master, dashboard, stock_ledger, stock_actions, orders
+
+from auth import require_inventory
+from routers import (
+    warehouses,
+    item_master,
+    dashboard,
+    stock_ledger,
+    stock_actions,
+    orders,
+)
 
 app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://computer-erp-inventory-frontend.vercel.app"],
+    allow_origins=[
+        "https://computer-erp-inventory-frontend.vercel.app"
+    ],
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -21,13 +32,19 @@ async def db_unavailable(request, exc):
         content={"detail": "Database unavailable, try again"}
     )
 
-# Register routers
-app.include_router(warehouses.router)
-app.include_router(item_master.router)
-app.include_router(dashboard.router)
-app.include_router(stock_ledger.router)
-app.include_router(stock_actions.router)
-app.include_router(orders.router)
+# Register and protect all Inventory routers
+for module in (
+    warehouses,
+    item_master,
+    dashboard,
+    stock_ledger,
+    stock_actions,
+    orders,
+):
+    app.include_router(
+        module.router,
+        dependencies=[Depends(require_inventory)]
+    )
 
 @app.get("/")
 def home():
