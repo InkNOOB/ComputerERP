@@ -6,7 +6,7 @@ from psycopg import IntegrityError
 from psycopg.errors import ForeignKeyViolation
 from database import get_db_connection
 from typing import Literal
-from security import require_inventory_user, require_inventory_admin
+from auth import require_inventory, require_admin
 
 router = APIRouter(prefix="/item_master", tags=["Item Master"])
 
@@ -82,7 +82,7 @@ SELECT = '''
 @router.get("/")
 def list_items(
     search: str | None = None,
-    user: dict = Depends(require_inventory_user)
+    user: dict = Depends(require_inventory)
 ):
     query = SELECT
     params: tuple = ()
@@ -109,7 +109,7 @@ def list_items(
 @router.get("/{im_id}")
 def get_item(
     im_id: int,
-    user: dict = Depends(require_inventory_user)
+    user: dict = Depends(require_inventory)
 ):
     with get_db_connection() as conn:
         with conn.cursor(row_factory=dict_row) as cur:
@@ -132,7 +132,7 @@ def get_item(
 @router.post("/", status_code=201)
 def create_item(
     item: ItemMasterIn,
-    user: dict = Depends(require_inventory_admin)
+    user: dict = Depends(require_admin)
 ):
     try:
         with get_db_connection() as conn:
@@ -181,7 +181,7 @@ def create_item(
 def update_item(
     im_id: int,
     item: ItemMasterUpdate,
-    user: dict = Depends(require_inventory_admin)
+    user: dict = Depends(require_admin)
 ):
     fields = item.model_dump(exclude_unset=True)
 
@@ -236,7 +236,7 @@ def update_item(
 @router.delete("/{im_id}", status_code=204)
 def delete_item(
     im_id: int,
-    user: dict = Depends(require_inventory_admin)
+    user: dict = Depends(require_admin)
 ):
     try:
         with get_db_connection() as conn:

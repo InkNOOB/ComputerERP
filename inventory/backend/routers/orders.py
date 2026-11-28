@@ -4,7 +4,7 @@ from pydantic import BaseModel, Field
 from typing import Optional, Literal
 from database import get_db_connection
 from psycopg.rows import dict_row
-from security import require_inventory_user, require_inventory_admin
+from auth import require_inventory, require_admin
 
 router = APIRouter(
     prefix="/orders",
@@ -43,7 +43,7 @@ class GoodsReceivedCreate(BaseModel):
 
 @router.get("/upcoming-requests")
 def get_upcoming_requests(
-    user: dict = Depends(require_inventory_user)
+    user: dict = Depends(require_inventory)
 ):
     conn = None
 
@@ -134,7 +134,7 @@ def get_upcoming_requests(
 @router.post("/restock-requests")
 def create_restock_request(
     request: RestockRequestCreate,
-    user: dict = Depends(require_inventory_user)
+    user: dict = Depends(require_inventory)
 ):
     conn = None
 
@@ -269,7 +269,7 @@ def create_restock_request(
 def update_stock_reorder_level(
     stock_id: int,
     update: StockReorderLevelUpdate,
-    user: dict = Depends(require_inventory_admin)
+    user: dict = Depends(require_admin)
 ):
     conn = None
 
@@ -333,7 +333,7 @@ def update_stock_reorder_level(
 
 @router.get("/incoming-requests")
 def get_incoming_requests(
-    user: dict = Depends(require_inventory_user)
+    user: dict = Depends(require_inventory)
 ):
     conn = None
 
@@ -396,7 +396,7 @@ def get_incoming_requests(
 
 @router.get("/purchase-requests")
 def get_purchase_requests(
-    user: dict = Depends(require_inventory_user)
+    user: dict = Depends(require_inventory)
 ):
     conn = None
 
@@ -453,7 +453,7 @@ def get_purchase_requests(
 
 @router.get("/purchase-orders")
 def get_purchase_orders(
-    user: dict = Depends(require_inventory_user)
+    user: dict = Depends(require_inventory)
 ):
     conn = None
 
@@ -507,7 +507,7 @@ def get_purchase_orders(
 
 @router.get("/goods-received")
 def get_goods_received(
-    user: dict = Depends(require_inventory_user)
+    user: dict = Depends(require_inventory)
 ):
     conn = None
 
@@ -613,7 +613,7 @@ def get_goods_received(
 def confirm_goods_received(
     gr_id: int,
     confirmation: GoodsReceivedConfirmation,
-    user: dict = Depends(require_inventory_user)
+    user: dict = Depends(require_inventory)
 ):
     conn = None
 
@@ -887,7 +887,7 @@ def confirm_goods_received(
 @router.post("/goods-received")
 def create_goods_received(
     request: GoodsReceivedCreate,
-    user: dict = Depends(require_inventory_user)
+    user: dict = Depends(require_inventory)
 ):
     conn = None
 
@@ -1019,7 +1019,7 @@ def create_goods_received(
 
 @router.get("/material-requests")
 def get_material_request_availability(
-    user: dict = Depends(require_inventory_user)
+    user: dict = Depends(require_inventory)
 ):
     query = '''
         SELECT
@@ -1146,7 +1146,7 @@ def get_material_request_availability(
 @router.post("/material-requests/{mr_id}/release")
 def release_material_request(
     mr_id: int,
-    user: dict = Depends(require_inventory_user)
+    user: dict = Depends(require_inventory)
 ):
     conn = None
 
@@ -1381,7 +1381,7 @@ def release_material_request(
 
 @router.get("/material-releases")
 def get_material_releases(
-    user: dict = Depends(require_inventory_user)
+    user: dict = Depends(require_inventory)
 ):
     conn = None
 
@@ -1526,7 +1526,7 @@ def get_sales_order_items(cur, order_id):
 
 @router.get("/sales-orders")
 def get_sales_orders(
-    user: dict = Depends(require_inventory_user)
+    user: dict = Depends(require_inventory)
 ):
     conn = None
 
@@ -1605,7 +1605,7 @@ def get_sales_orders(
 @router.post("/sales-orders/{order_id}/accept")
 def accept_sales_order(
     order_id: int,
-    user: dict = Depends(require_inventory_user)
+    user: dict = Depends(require_inventory)
 ):
     conn = None
 
@@ -1676,7 +1676,7 @@ def accept_sales_order(
 @router.post("/sales-orders/{order_id}/prepare")
 def prepare_sales_order(
     order_id: int,
-    user: dict = Depends(require_inventory_user)
+    user: dict = Depends(require_inventory)
 ):
     conn = None
 
@@ -1824,7 +1824,7 @@ def prepare_sales_order(
 @router.post("/sales-orders/{order_id}/release")
 def release_sales_order(
     order_id: int,
-    user: dict = Depends(require_inventory_user)
+    user: dict = Depends(require_inventory)
 ):
     conn = None
 
@@ -2045,7 +2045,7 @@ def release_sales_order(
 
 @router.get("/production-updates")
 def get_production_updates(
-    user: dict = Depends(require_inventory_user)
+    user: dict = Depends(require_inventory)
 ):
     conn = None
 
@@ -2106,7 +2106,7 @@ def get_production_updates(
 
 @router.get("/finished-goods")
 def get_finished_goods(
-    user: dict = Depends(require_inventory_user)
+    user: dict = Depends(require_inventory)
 ):
     conn = None
 
@@ -2179,7 +2179,7 @@ def get_finished_goods(
 def confirm_finished_goods(
     production_id: int,
     confirmation: GoodsReceivedConfirmation,
-    user: dict = Depends(require_inventory_user)
+    user: dict = Depends(require_inventory)
 ):
     conn = None
 
@@ -2457,7 +2457,7 @@ def confirm_finished_goods(
 
 @router.get("/finished-goods/history")
 def get_finished_goods_history(
-    user: dict = Depends(require_inventory_user)
+    user: dict = Depends(require_inventory)
 ):
     conn = None
 
