@@ -329,38 +329,66 @@ export default function EmployeesPage() {
   // FILTER ACTIVE EMPLOYEES
   // =========================
 
-  const filteredEmployees = employees.filter((employee) => {
-    // Archived employees are hidden from the main Employee Records page.
-    if (employee.employment_status === "Archived") {
-      return false;
-    }
+  const filteredEmployees = employees
+    .filter((employee) => {
+      // Archived employees are hidden from the main Employee Records page.
+      if (employee.employment_status === "Archived") {
+        return false;
+      }
 
-    const fullName =
-      `${employee.first_name} ${employee.last_name}`.toLowerCase();
+      const fullName =
+        `${employee.first_name} ${employee.last_name}`.toLowerCase();
 
-    const searchMatch =
-      fullName.includes(search.toLowerCase()) ||
-      (employee.userid ?? "").toLowerCase().includes(search.toLowerCase()) ||
-      (employee.email ?? "").toLowerCase().includes(search.toLowerCase());
+      const searchMatch =
+        fullName.includes(search.toLowerCase()) ||
+        (employee.userid ?? "")
+          .toLowerCase()
+          .includes(search.toLowerCase()) ||
+        (employee.email ?? "")
+          .toLowerCase()
+          .includes(search.toLowerCase());
 
-    const statusMatch =
-      statusFilter === "All" ||
-      employee.employment_status === statusFilter;
+      const statusMatch =
+        statusFilter === "All" ||
+        employee.employment_status === statusFilter;
 
-    const positionMatch =
-      positionFilter === "All" ||
-      String(employee.position_id) === positionFilter;
+      const positionMatch =
+        positionFilter === "All" ||
+        String(employee.position_id) === positionFilter;
 
-    return searchMatch && statusMatch && positionMatch;
-  });
+      return searchMatch && statusMatch && positionMatch;
+    })
+    .sort((a, b) => {
+      const dateA = a.hire_date
+        ? new Date(a.hire_date).getTime()
+        : 0;
+
+      const dateB = b.hire_date
+        ? new Date(b.hire_date).getTime()
+        : 0;
+
+      return dateB - dateA;
+    });
 
   // =========================
   // ARCHIVED EMPLOYEES
   // =========================
 
-  const archivedEmployees = employees.filter(
-    (employee) => employee.employment_status === "Archived"
-  );
+  const archivedEmployees = employees
+    .filter(
+      (employee) => employee.employment_status === "Archived"
+    )
+    .sort((a, b) => {
+      const dateA = a.hire_date
+        ? new Date(a.hire_date).getTime()
+        : 0;
+
+      const dateB = b.hire_date
+        ? new Date(b.hire_date).getTime()
+        : 0;
+
+      return dateB - dateA;
+    });
 
   // Search archived employees
   const filteredArchivedEmployees = archivedEmployees.filter((employee) => {
