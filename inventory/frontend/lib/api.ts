@@ -41,7 +41,7 @@ export async function apiFetch(
     ? endpoint
     : `${API_URL}${endpoint.startsWith("/") ? "" : "/"}${endpoint}`;
 
-  return fetch(url, {
+  return apiFetch(url, {
     ...options,
     headers,
   });
