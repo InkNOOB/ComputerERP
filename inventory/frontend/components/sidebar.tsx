@@ -152,10 +152,15 @@ className="ml-20 flex h-8 w-8 shrink-0 items-center justify-center rounded-full 
   })}
 </nav>
 
-     {/* User Profile */}
-{(!collapsed || mobileOpen) && (
-  <UserProfile name="Inventory User" role="Employee" />
-)}
+{/* User Profile */}
+<div className="relative z-10 w-full shrink-0">
+  {(!collapsed || mobileOpen) && (
+    <UserProfile
+      name="Inventory User"
+      role="Employee"
+    />
+  )}
+</div>
 
 {/* Logout Button */}
 <button
