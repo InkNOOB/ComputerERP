@@ -46,7 +46,7 @@ export default function Sidebar({
     sessionStorage.removeItem("erp_token");
 
     // Return to the centralized login page
-    window.location.replace("http://localhost:3000");
+    window.location.replace("https://computer-erp-login.vercel.app");
   }
 
   return (
