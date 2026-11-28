@@ -68,7 +68,7 @@ export default function UserProfile({
       type="button"
       onClick={openMyPage}
       title="Open my employee page"
-      className="flex w-full items-center gap-3 rounded-2xl bg-[#668F98] p-3 text-left text-white transition-colors hover:bg-[#789DA5]"
+      className="relative z-20 flex w-full cursor-pointer items-center gap-3 rounded-2xl bg-[#668F98] p-3 text-left text-white transition-colors hover:bg-[#789DA5]"
     >
       <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#B8D5D7] font-semibold text-[#35636B]">
         {displayName.charAt(0).toUpperCase()}
